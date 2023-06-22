@@ -1,6 +1,5 @@
 from app.config.db import db
-from werkzeug.security import hmac
-
+from passlib.hash import bcrypt
 
 class UserModel(db.Model):
     __tablename__ = 'users'
@@ -17,8 +16,12 @@ class UserModel(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def set_password(self, password):
+        self.password = bcrypt.hash(password)
+        print(self.password)
+
     def check_password(self, password):
-        return hmac.compare_digest(self.password, password)
+        return bcrypt.verify(password, self.password)
 
     @classmethod
     def find_by_email(cls, email):

@@ -2,12 +2,14 @@ from datetime import timedelta
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
+from flask_cors import CORS
 
 from app.resources.transaction import TransactionList
 from app.resources.user import UserRegister, UserLogin
 from app.config.config import postgresqlConfig
 
 app = Flask(__name__)
+CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = postgresqlConfig
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -18,11 +20,9 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=10)
 app.config.from_pyfile('config/config.py')
 
 jwt = JWTManager(app)
-api = Api(app, prefix="/api/v3")
+api = Api(app)
 
 
-# @app.before_first_request
-# def create_tables():
 with app.app_context():
     from app.config.db import db
     db.init_app(app)
@@ -30,16 +30,8 @@ with app.app_context():
 
 
 api.add_resource(UserRegister, '/register', methods=['POST'])
-api.add_resource(UserLogin, '/merchant/user/login', methods=['POST'])
-api.add_resource(TransactionList, '/transactions/report', methods=['POST'])
+api.add_resource(UserLogin, '/login', methods=['POST'])
+api.add_resource(TransactionList, '/report', methods=['POST'])
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port='5000',debug=True)
-
-# from flask import Flask
-
-# app = Flask(__name__)
-
-# @app.route('/')
-# def hello():
-#     return 'Hello, World!'
