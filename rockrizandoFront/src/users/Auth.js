@@ -7,21 +7,19 @@ import { Button, Form, Input } from 'antd';
 
 // https://authkit.arkadip.dev/integration/#import
 
-
 const validatePassword = (_, value) => {
-    // Define the regular expressions for each requirement
     const minLengthRegex = /^.{6,}$/;
     const specialCharRegex = /[@#]/;
     const uppercaseRegex = /[A-Z]/;
     const numberRegex = /[0-9]/;
 
-    // Validate the password against all the requirements
     if (
       minLengthRegex.test(value) &&
       specialCharRegex.test(value) &&
       uppercaseRegex.test(value) &&
       numberRegex.test(value)
-    ) {
+    ) 
+    {
       return Promise.resolve();
     }
 
