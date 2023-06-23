@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const CreateUserPage = () => {
   const [formData, setFormData] = useState({
@@ -9,29 +10,40 @@ const CreateUserPage = () => {
     dateOfBirth: '',
   });
   const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
+      setSuccessMessage('');
+      setErrorMessage('');
     } else {
-      // Fazer a lógica de criação de usuário aqui
-      // Por exemplo, enviar os dados para o backend ou executar outra ação
-      console.log('Formulário enviado:', formData);
-      // Limpar o formulário
-      setFormData({
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        dateOfBirth: '',
-      });
-      setErrors({});
+      try {
+        const response = await axios.post('/api/create_user', formData);
+        console.log('Usuário criado com sucesso:', response.data);
+        setSuccessMessage('Usuário criado com sucesso!');
+        setErrorMessage('');
+      
+        setFormData({
+          name: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+          dateOfBirth: '',
+        });
+        setErrors({});
+      } catch (error) {
+        console.error('Erro ao criar usuário:', error);
+        setErrorMessage('Erro ao criar usuário. Por favor, tente novamente.');
+        setSuccessMessage('');
+      }
     }
   };
 
@@ -49,6 +61,8 @@ const CreateUserPage = () => {
   return (
     <div>
       <h1>Criação de Novo Usuário</h1>
+      {successMessage && <p className="success">{successMessage}</p>}
+      {errorMessage && <p className="error">{errorMessage}</p>}
       <form onSubmit={handleSubmit}>
         <div>
           <label>Nome:</label>
