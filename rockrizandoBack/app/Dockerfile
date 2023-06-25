@@ -35,6 +35,6 @@ ENV MASTER_DB_LOG_MODE=${MASTER_DB_LOG_MODE}
 CMD ["flask", "run","--host=0.0.0.0"]
 
 # vf activate rockrizando
-# export FLASK_APP=./pp/app
+# export FLASK_APP=./app/app
 # flask run --host=localhost
 # docker run    --name rockrizandoDB    -p 5432:5432    -e POSTGRES_USER=postgres    -e POSTGRES_PASSWORD=postgres    -e POSTGRES_DB=rockrizando    -d    postgres

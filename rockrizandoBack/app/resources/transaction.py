@@ -17,8 +17,7 @@ class TransactionList(Resource):
     def post(self):
         
         current_user = get_jwt_identity()
-        
-        print("secrete data")
+        print(current_user)
         
         return "Secret data", 200
         

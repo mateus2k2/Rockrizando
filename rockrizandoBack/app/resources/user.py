@@ -23,7 +23,7 @@ class UserLogin(Resource):
         if not user or not user.check_password(password):
             return {'status': 'Login failed.'}, 401
         
-        access_token = create_access_token(identity={"user": user.email})
+        access_token = create_access_token(identity={"user": user.id, "email": user.email})
         # access_token = create_access_token(identity=json.dumps(user, cls=AlchemyEncoder))
         return jsonify(
             token=access_token,

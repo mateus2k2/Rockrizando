@@ -13,6 +13,7 @@ import Parties from './parties/Parties'
 import NewParty from './parties/NewParty'
 import Auth from './users/Auth'
 import UserProfile from './users/UserProfile'
+import CreateUser from './users/CreateUser'
 
 import './App.css';
 
@@ -34,6 +35,7 @@ function App() {
             <Route exact path="/profile/:userId/" element={<UserProfile/>}/>
             <Route exact path="/auth" element={<Auth/>}/>
             <Route exact path="/newParty" element={<NewParty/>}/>
+            <Route exact path="/createUser" element={<CreateUser/>}/>
             
             
             {/* Exemplo rota segura que so pode ser acessada caso o usuário esteja logado */}
