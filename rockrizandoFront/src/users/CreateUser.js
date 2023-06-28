@@ -1,20 +1,26 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const CreateUserPage = () => {
+import './UserProfile.css'; // Importando o arquivo CSS personalizado
+
+const UserProfile = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
-    dateOfBirth: '',
+    profilePicture: null,
   });
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (e.target.name === 'profilePicture') {
+      setFormData({ ...formData, [e.target.name]: e.target.files[0] });
+    } else {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -25,23 +31,28 @@ const CreateUserPage = () => {
       setSuccessMessage('');
       setErrorMessage('');
     } else {
+      const userData = new FormData();
+      userData.append('name', formData.name);
+      userData.append('email', formData.email);
+      userData.append('password', formData.password);
+      userData.append('confirmPassword', formData.confirmPassword);
+      if (formData.profilePicture) {
+        userData.append('profilePicture', formData.profilePicture);
+      }
+
       try {
-        const response = await axios.post('/api/create_user', formData);
-        console.log('Usuário criado com sucesso:', response.data);
-        setSuccessMessage('Usuário criado com sucesso!');
-        setErrorMessage('');
-      
-        setFormData({
-          name: '',
-          email: '',
-          password: '',
-          confirmPassword: '',
-          dateOfBirth: '',
+        const response = await axios.post('/api/update_user', userData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         });
+        console.log('Dados do usuário atualizados:', response.data);
+        setSuccessMessage('Dados do usuário atualizados com sucesso!');
+        setErrorMessage('');
         setErrors({});
       } catch (error) {
-        console.error('Erro ao criar usuário:', error);
-        setErrorMessage('Erro ao criar usuário. Por favor, tente novamente.');
+        console.error('Erro ao atualizar dados do usuário:', error);
+        setErrorMessage('Erro ao atualizar dados do usuário. Por favor, tente novamente.');
         setSuccessMessage('');
       }
     }
@@ -49,7 +60,7 @@ const CreateUserPage = () => {
 
   const validateForm = () => {
     const errors = {};
-    if (formData.password.length < 6) {
+    if (formData.password.length > 0 && formData.password.length < 6) {
       errors.password = 'A senha deve ter pelo menos 6 caracteres';
     }
     if (formData.password !== formData.confirmPassword) {
@@ -59,8 +70,13 @@ const CreateUserPage = () => {
   };
 
   return (
-    <div>
-      <h1>Criação de Novo Usuário</h1>
+    <div className="user-profile">
+      <div className="profile-header">
+        <div className="profile-picture">
+          <img src={formData.profilePicture} alt="Foto de Perfil" />
+        </div>
+        <h1>{formData.name}</h1>
+      </div>
       {successMessage && <p className="success">{successMessage}</p>}
       {errorMessage && <p className="error">{errorMessage}</p>}
       <form onSubmit={handleSubmit}>
@@ -91,7 +107,6 @@ const CreateUserPage = () => {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            required
           />
           {errors.password && <span className="error">{errors.password}</span>}
         </div>
@@ -102,26 +117,28 @@ const CreateUserPage = () => {
             name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleChange}
-            required
           />
           {errors.confirmPassword && (
             <span className="error">{errors.confirmPassword}</span>
           )}
         </div>
         <div>
-          <label>Data de Nascimento:</label>
+          <label>Foto de Perfil:</label>
           <input
-            type="date"
-            name="dateOfBirth"
-            value={formData.dateOfBirth}
+            type="file"
+            name="profilePicture"
+            accept="image/*"
             onChange={handleChange}
-            required
           />
         </div>
-        <button type="submit">Criar Usuário</button>
+        <button type="submit">Atualizar Perfil</button>
       </form>
+      <div>
+        <h2>Festas Participadas</h2>
+        {/* Renderize aqui a lista de festas participadas pelo usuário */}
+      </div>
     </div>
   );
 };
 
-export default CreateUserPage;
+export default UserProfile;
