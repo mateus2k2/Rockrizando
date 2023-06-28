@@ -1,5 +1,4 @@
-// import { DatePicker } from 'antd';
-import React, { /* Fragment */ } from 'react';
+import React from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -8,7 +7,7 @@ import {
 } from 'react-router-dom';
 
 import { AuthProvider, RequireAuth } from 'react-auth-kit'
-import { Layout } from 'antd';
+import { Layout, theme } from 'antd';
 
 import Parties from './parties/Parties'
 import NewParty from './parties/NewParty'
@@ -16,13 +15,17 @@ import Auth from './users/Auth'
 import UserProfile from './users/UserProfile'
 import CreateUser from './users/CreateUser'
 
-import Sidebar from './shared/Navbar/Navbar'
+import Sidebar from './shared/Navegation/Sider'
 
 import './App.css';
 
-const {Content/* , Header, Footer, Sider */} = Layout;
+const { Content, Header, Footer} = Layout;
 
 function App() {
+  const {
+    token: { colorBgContainer },
+  } = theme.useToken();
+  
   return (
 
     <AuthProvider authType={'cookie'}
@@ -34,8 +37,10 @@ function App() {
         <Layout style={{ minHeight: '100vh' }}>
 
           <Sidebar />
+
           <Layout style={{ minHeight: '100vh' }}>
 
+            <Header theme="dark" style={{ padding: 0, background: colorBgContainer, display: 'flex', justifyContent: 'center', alignItems: 'center' }} className = ".logo-text"> Header </Header>
 
             <Content style={{ padding: '24px' }}>
               <Routes>
@@ -64,10 +69,12 @@ function App() {
 
               </Routes>
             </Content>
+
+            <Footer style={{ textAlign: 'center' }}> Footer </Footer>
+          
           </Layout>
         </Layout>
-        {/* <Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by Ant UED</Footer> */}
-      </Router>
+        </Router>
 
     </AuthProvider>
   );
