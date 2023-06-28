@@ -20,7 +20,7 @@ import Sidebar from './shared/Navbar/Navbar'
 
 import './App.css';
 
-const {Content} = Layout;
+const {Content/* , Header, Footer, Sider */} = Layout;
 
 function App() {
   return (
@@ -32,8 +32,11 @@ function App() {
 
       <Router>
         <Layout style={{ minHeight: '100vh' }}>
+
           <Sidebar />
-          <Layout>
+          <Layout style={{ minHeight: '100vh' }}>
+
+
             <Content style={{ padding: '24px' }}>
               <Routes>
 
@@ -45,14 +48,12 @@ function App() {
                 <Route exact path="/profile/" element={<UserProfile />} />
                 <Route exact path="/newParty" element={<NewParty />} />
 
-                {/* Exemplo rota segura que so pode ser acessada caso o usuário esteja logado */}
                 <Route path={'/newParty'} element={
                   <RequireAuth loginPath={'/auth'}>
                     <NewParty />
                   </RequireAuth>
                 } />
 
-                {/* Exemplo rota segura que so pode ser acessada caso o usuário esteja logado */}
                 <Route path={'/profile/'} element={
                   <RequireAuth loginPath={'/auth'}>
                     <UserProfile />
@@ -63,10 +64,9 @@ function App() {
 
               </Routes>
             </Content>
-            {/* Footer */}
           </Layout>
-          {/* <Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by Ant UED</Footer> */}
         </Layout>
+        {/* <Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by Ant UED</Footer> */}
       </Router>
 
     </AuthProvider>
