@@ -4,8 +4,11 @@ from flask_jwt_extended import JWTManager
 from flask_restful import Api
 from flask_cors import CORS
 
-from app.resources.transaction import TransactionList
+import os
+
+from app.resources.party import NewParty
 from app.resources.user import UserRegister, UserLogin
+from app.resources.files import UserFile, PartyFile
 from app.config.config import postgresqlConfig
 
 app = Flask(__name__)
@@ -15,7 +18,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = postgresqlConfig
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["JWT_SECRET_KEY"] = "JWT123SACRETKEY"
 app.config['JWT_TOKEN_LOCATION'] = ['headers']
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=10)
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=60 * 24 * 30 * 360) # ---------------------------- 
 
 app.config.from_pyfile('config/config.py')
 
@@ -29,9 +32,19 @@ with app.app_context():
     db.create_all()
 
 
+api.add_resource(UserFile, '/files/user/<string:filename>', methods=['GET'])
+api.add_resource(PartyFile, '/files/party/<string:filename>', methods=['GET'])
 api.add_resource(UserRegister, '/register', methods=['POST'])
 api.add_resource(UserLogin, '/login', methods=['POST'])
-api.add_resource(TransactionList, '/report', methods=['POST'])
+api.add_resource(NewParty, '/newParty', methods=['POST'])
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port='5000',debug=True)
+
+# docker run    --name rockrizandoDB    -p 5432:5432    -e POSTGRES_USER=postgres    -e POSTGRES_PASSWORD=postgres    -e POSTGRES_DB=rockrizando    -d    postgres
+# vf activate rockrizando
+    
+# export FLASK_APP=./app/app
+# flask run --host=localhost
+    
+# flask --app ./app/app.py --debug run

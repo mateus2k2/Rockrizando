@@ -1,28 +1,12 @@
-/* 
-FESTA
-
-nome
-data
-local
-descricao
-foto
-Tipo ingresso
-
-Participantes
-Dono
-
-*/
-
 import axios from 'axios';
 
 import React, { useState } from 'react';
 // import { useNavigate } from 'react-router-dom';
 // import { useSignIn } from 'react-auth-kit';
-// import jwt_decode from "jwt-decode";
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 
 
-import { Upload, Space, Form, Button, Input, Spin, AutoComplete, /* message, */ DatePicker } from 'antd';
+import { Upload, Space, Form, Button, Input, Spin, AutoComplete, message, DatePicker } from 'antd';
 import antIcon from '../shared/Spin.js'
 
 import { validatePasswordPromise, validadeEmailPromise, validatePassword, validadeEmail } from '../shared/Validators.js'
@@ -36,11 +20,11 @@ const normFile = (e) => {
 
 const NewParty = () => {
     const [loading/* , setLoading */] = useState(false);
-    // const signIn = useSignIn()
     // const navigate = useNavigate();
     const { TextArea } = Input;
     const [form] = Form.useForm()
     const [addressOptions, setAddressOptions] = useState([]);
+    const [fileList, setFileList] = useState([]);
 
     const handleAddressSearch = value => {
         const API_KEY = 'pk.eyJ1IjoibWF0ZXVzMmsyIiwiYSI6ImNsYmd4ZmV3MzA2ZTkzd2xjMDgzdWR2ejYifQ.RudfKTpz0CtaADWcoei8WA';
@@ -66,7 +50,22 @@ const NewParty = () => {
 
     // Handle form submission
     const onFinish = async (values) => {
-        console.log(values)
+
+        const formData = new FormData();
+        formData.append('image', values.upload[0]);
+        console.log(values.upload[0])
+        console.log(formData)
+
+        // axios.post('/upload', formData)
+        //     .then(response => {
+        //         // Handle response from the server
+        //         message.success('Image uploaded successfully');
+        //     })
+        //     .catch(error => {
+        //         // Handle error
+        //         message.error('Image upload failed');
+        //         console.error(error);
+        //     });
 
         // // Send login request
         // try {
@@ -89,6 +88,22 @@ const NewParty = () => {
     // Handle form submission errors
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
+
+    };
+
+    const beforeUpload = (file) => {
+        if (fileList.length >= 1) {
+            message.error('You can only upload one file');
+            return false; // Prevent upload
+        }
+        else {
+            setFileList([file]);
+        }
+        return false; // Prevent automatic upload
+    };
+
+    const handleChange = ({ fileList }) => {
+        setFileList(fileList);
     };
 
     return (
@@ -258,18 +273,28 @@ const NewParty = () => {
 
 
 
-                    <Form.Item label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
-                        <Upload action="/upload.do" listType="picture-card">
-                            <div>
-                                <PlusOutlined />
-                                <div
-                                    style={{
-                                        marginTop: 8,
-                                    }}
-                                >
-                                    Upload
+                    <Form.Item name="upload" label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
+                        <Upload
+                            action=""
+                            listType="picture-card"
+                            beforeUpload={beforeUpload}
+                            fileList={fileList}
+                            onChange={handleChange}
+                            accept=".png,.jpg,.jpeg"
+                            multiple={false}>
+                            {fileList.length === 0 ? (
+                                <div>
+                                    <PlusOutlined />
+                                    <div
+                                        style={{
+                                            marginTop: 8,
+                                        }}
+                                    >
+                                        Upload
+                                    </div>
                                 </div>
-                            </div>
+                            ): null}
+
                         </Upload>
                     </Form.Item>
 

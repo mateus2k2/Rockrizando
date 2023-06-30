@@ -1,10 +1,13 @@
 from flask_restful import Resource, reqparse
-from flask import jsonify
+from flask import jsonify, request
 from flask_jwt_extended import create_access_token, jwt_required
 from flask_jwt_extended import current_user
 from app.models.user import UserModel
 from app.config.db import db
-
+from datetime import datetime
+from werkzeug.utils import secure_filename
+import os
+from werkzeug.datastructures import FileStorage
 
 class UserLogin(Resource):
     def __init__(self):
@@ -33,21 +36,54 @@ class UserLogin(Resource):
 
 class UserRegister(Resource):
     def __init__(self):
-        # self.logger = create_logger()
         pass
 
     parser = reqparse.RequestParser()  
-    parser.add_argument('email', type=str, required=True, help='Not Blank')
-    parser.add_argument('password', type=str, required=True, help='Not Blank')
+    parser.add_argument('email', type=str, required=True, help='Not Blank', location = 'form')
+    parser.add_argument('password', type=str, required=True, help='Not Blank', location = 'form')
+    parser.add_argument('username', type=str, required=True, help='Not Blank', location = 'form')
+    parser.add_argument('birth_date', type=str, required=True, help='Not Blank', location = 'form')
+    parser.add_argument('profile_picture', type=FileStorage, location='files', required=False)
 
     def post(self):
         data = UserRegister.parser.parse_args()
-
+                
+        email = data['email']
+        password = data['password']
+        username = data['username']
+        birth_date_str = data['birth_date']
+        birth_date = None
+        profile_picture = None
+        
         if UserModel.find_by_email(data['email']):
             return {'message': 'user has already been created.'}, 400
 
-        user = UserModel(**data)
+        try:
+            birth_date = datetime.strptime(birth_date_str, '%d-%m-%Y')
+        except ValueError:
+            return {'message': 'Invalid Birth Date'}, 400
+
+        user = UserModel(email=email, username=username, birth_date=birth_date, password=password)
         user.set_password(data['password'])  
         user.save_to_db()
+        
+        user = UserModel.find_by_email(email)
+        if not user:
+            return {'message': 'Internal Error'}, 400
+        
+        if data['profile_picture']:
+            file = data['profile_picture']
+            if file.filename == '':
+                return {'message': 'No file selected'}, 400
+            
+            file.filename = 'profile_picture_' + str(user.id) + '.jpg'
+            filename = secure_filename(file.filename)
+            file_path = os.path.join('./app/files/user', filename)
+            file.save(file_path)
+            profile_picture = file_path
+        
+        UserModel.set_profile_picture(user, profile_picture)
+        user.save_to_db()
+        
 
         return {'message': 'user has been created successfully.'}, 201

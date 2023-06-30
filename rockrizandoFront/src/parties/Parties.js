@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Spin, Input } from 'antd';
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 import antIcon from '../shared/Spin.js';
 
 const { Search } = Input;
@@ -36,18 +37,18 @@ const Parties = () => {
           },
           {
             id: 4,
-            title: 'Card 3',
-            description: 'This is the description for Card 3.',
+            title: 'Card 4',
+            description: 'This is the description for Card 4.',
           },
           {
             id: 5,
-            title: 'Card 3',
-            description: 'This is the description for Card 3.',
+            title: 'Card 5',
+            description: 'This is the description for Card 5.',
           },
           {
             id: 6,
-            title: 'Card 3',
-            description: 'This is the description for Card 3.',
+            title: 'Card 6',
+            description: 'This is the description for Card 6.',
           },
         ];
 
@@ -69,31 +70,32 @@ const Parties = () => {
 
   return (
     <React.Fragment>
-    <h1 className="centerText">Parties</h1>
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <div>
-        <Search
-          placeholder="Search parties..."
-          allowClear
-          onChange={handleSearch}
-          style={{ width: 300, marginBottom: 16 }}
-        />
+      <h1 className="centerText">Parties</h1>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div>
+          <Search
+            placeholder="Search parties..."
+            allowClear
+            onChange={handleSearch}
+            style={{ width: 300, marginBottom: 16 }}
+          />
 
-        {loading ? (
-          <Spin size="large" indicator={antIcon} />
-        ) : (
-          <div>
-            {filteredData.map(item => (
-              <Card key={item.id} title={item.title} style={{ width: 300 }}>
-                <p>{item.description}</p>
-              </Card>
-            ))}
-          </div>
-        )}
+          {loading ? (
+            <Spin size="large" indicator={antIcon} />
+          ) : (
+            <div>
+              {filteredData.map(item => (
+                <Link key={item.id} to={`/party/${item.id}`}>
+                  <Card title={item.title} style={{ width: 300 }}>
+                    <p>{item.description}</p>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
     </React.Fragment>
-
   );
 };
 

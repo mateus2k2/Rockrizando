@@ -3,11 +3,12 @@ import { Menu, Layout } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
 import {
   HomeOutlined,
-  UnorderedListOutlined,
   PlusOutlined,
-  UserOutlined
+  UserOutlined,
+  KeyOutlined
 } from '@ant-design/icons';
 import { Grid } from 'antd';
+import { useAuthUser, useIsAuthenticated } from 'react-auth-kit';
 
 import Logo from '../Logo'
 import './Sider.css';
@@ -20,8 +21,10 @@ const Sidebar = () => {
   const [selectedKeys, setSelectedKeys] = useState([]);
   const location = useLocation();
   const screens = useBreakpoint();
-  
-  const isAuthenticated = true;
+
+  const auth = useAuthUser()
+  const isAuthenticated = useIsAuthenticated();
+
 
   useEffect(() => {
     const path = location.pathname;
@@ -41,50 +44,64 @@ const Sidebar = () => {
     setCollapsed(!collapsed);
   };
 
-  let menuToLoad = [
-    <Menu.Item key="/" icon={<HomeOutlined />}>
-      <Link to="/">Home</Link>
-    </Menu.Item>,
-    <Menu.Item key="parties" icon={<UnorderedListOutlined />}>
-      <Link to="/parties">Parties</Link>
-    </Menu.Item>
-  ];
+  let menuToLoad = [];
 
-  if (isAuthenticated) {
-    menuToLoad.push(
-      <Menu.Item key="newParty" icon={<PlusOutlined />}>
-        <Link to="/newParty">New Party</Link>
+  if (isAuthenticated()) {
+    const userId = auth().user
+
+    menuToLoad = [
+      <Menu.Item key="home" icon={<HomeOutlined />}>
+        <Link to="/">Home</Link>
       </Menu.Item>,
-      <Menu.Item key="profile" icon={<UserOutlined />}>
-        <Link to="/profile">Profile</Link>
+      <Menu.Item key="newParty" icon={<PlusOutlined />}>
+        <Link to="/party/new">New Party</Link>
+      </Menu.Item>,
+      <Menu.SubMenu key="profile" icon={<UserOutlined />} title="Profile">
+        <Menu.Item key="editProfile">
+          <Link to={`/user/${userId}/profile/`}>Edit profile</Link>
+        </Menu.Item>
+        <Menu.Item key="purchases">
+          <Link to={`/user/${userId}/purchases/`}>Purchases</Link>
+        </Menu.Item>
+        <Menu.Item key="myParties">
+          <Link to={`/user/${userId}/parties/`}>My Parties</Link>
+        </Menu.Item>
+      </Menu.SubMenu>
+    ];
+  }
+  else {
+    menuToLoad = [
+      <Menu.Item key="/" icon={<HomeOutlined />}>
+        <Link to="/">Home</Link>
+      </Menu.Item>,
+      <Menu.Item key="login" icon={<KeyOutlined />}>
+        <Link to="/login">Login/Register</Link>
       </Menu.Item>
-    );
+    ];
   }
 
+  // let menuToLoad = [
+  //   { key: "/", icon: <HomeOutlined />, label: "Home", link: "/" },
+  //   { key: "parties", icon: <UnorderedListOutlined />, label: "Parties", link: "/parties" }
+  // ];
+
+  // if (isAuthenticated) {
+  //   menuToLoad.push(
+  //     { key: "newParty", icon: <PlusOutlined />, label: "New Party", link: "/newParty" },
+  //     { key: "profile", icon: <UserOutlined />, label: "Profile", link: "/profile" }
+
+  //   )
+  // }
+
   return (
-    <Sider collapsible collapsed={collapsed} onCollapse={toggleCollapse} theme="dark">
+    <Sider collapsible collapsed={collapsed} onCollapse={toggleCollapse} theme="dark" style={{ position: 'fixed', height: '100%' }}>
       <Logo collapsed={collapsed} />
       <Menu theme="dark" mode="inline" selectedKeys={selectedKeys}>
         {menuToLoad}
       </Menu>
+      {/* <Menu theme="dark" mode="inline" selectedKeys={selectedKeys} items={menuToLoad} /> */}
     </Sider>
   );
 };
 
 export default Sidebar;
-
-
-// let menuToLoad = [
-//   { key: "/", icon: <HomeOutlined />, label: "Home", link: "/" },
-//   { key: "parties", icon: <UnorderedListOutlined />, label: "Parties", link: "/parties" }
-// ];
-
-// if (isAuthenticated) {
-//   menuToLoad.push(
-//     { key: "newParty", icon: <PlusOutlined />, label: "New Party", link: "/newParty" },
-//     { key: "profile", icon: <UserOutlined />, label: "Profile", link: "/profile" }
-
-//   )
-// }
-
-// <Menu theme="dark" mode="inline" selectedKeys={selectedKeys} items={menuToLoad} />

@@ -1,7 +1,7 @@
 from app.config.db import db
 
 
-class TransactionModel(db.Model):
+class PartyModel(db.Model):
     __tablename__ = 'transaction'
 
     id = db.Column(db.Integer, primary_key=True)

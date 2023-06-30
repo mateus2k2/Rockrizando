@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useSignIn, useIsAuthenticated } from 'react-auth-kit';
 import jwt_decode from "jwt-decode";
 
@@ -10,7 +10,7 @@ import antIcon from '../shared/Spin.js'
 
 import { validatePasswordPromise, validadeEmailPromise, validatePassword, validadeEmail } from '../shared/Validators.js'
 
-const Auth = () => {
+const Login = () => {
     const [loading, setLoading] = useState(false);
     const signIn = useSignIn()
     const navigate = useNavigate();
@@ -80,11 +80,11 @@ const Auth = () => {
         console.log('Failed:', errorInfo);
     };
 
-    if(!isAuthenticated()){
+    if (!isAuthenticated()) {
         return (
-            
+
             <React.Fragment>
-                
+
                 <h1 className="centerText">Auth</h1>
 
                 <div className="center">
@@ -157,7 +157,9 @@ const Auth = () => {
                                                 <Spin indicator={antIcon} />
                                             </div>
                                         )}
-
+                                        <Button type="link" htmlType="button">
+                                            <Link to="/register">Register</Link>
+                                        </Button>
                                     </React.Fragment>
                                 );
                             }}
@@ -167,10 +169,10 @@ const Auth = () => {
             </React.Fragment>
         );
     }
-    else{
+    else {
         message.error('You are already logged in. Redirecting...');
     }
 
 }
 
-export default Auth 
+export default Login 
