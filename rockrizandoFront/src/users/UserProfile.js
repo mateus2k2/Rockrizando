@@ -1,16 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import './UserProfile.css';
 import { useAuthUser, useAuthHeader } from 'react-auth-kit';
+import { PlusOutlined } from '@ant-design/icons'
 import axios from 'axios';
+import { Form, Input, Button, Upload, message } from 'antd';
 
 const UserProfile = () => {
+  const [fileList, setFileList] = useState([]);
   const [isEditMode, setIsEditMode] = useState(false);
   const [name, setName] = useState('John Doe');
   const [email, setEmail] = useState('johndoe@example.com');
   const [password, setPassword] = useState('');
-  const [birthdate, setBirthdate] = useState('');
   const auth = useAuthUser();
-  const authHeader = useAuthHeader()
+  const authHeader = useAuthHeader();
+
+  const normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e?.fileList;
+  };
+
+  const beforeUpload = (file) => {
+    if (fileList.length >= 1) {
+      message.error('You can only upload one file');
+      return false;
+    }
+    else {
+      setFileList([file]);
+    }
+    return false;
+  };
+
+  const handleChange = ({ fileList }) => {
+    setFileList(fileList);
+  };
 
   useEffect(() => {
     // Fetch initial user information from the backend
@@ -27,7 +51,6 @@ const UserProfile = () => {
       const userData = response.data;
       setName(userData.username);
       setEmail(userData.email);
-      setBirthdate(userData.birth_date);
     } catch (error) {
       console.log(error);
     }
@@ -59,10 +82,6 @@ const UserProfile = () => {
     setPassword(e.target.value);
   };
 
-  const handleBirthdateChange = (e) => {
-    setBirthdate(e.target.value);
-  };
-
   return (
     <div className="user-profile">
       <div className="profile-header">
@@ -73,22 +92,51 @@ const UserProfile = () => {
         <h1>{name}</h1>
       </div>
       {isEditMode ? (
-        <form>
-          <label htmlFor="name">Name:</label>
-          <input type="text" id="name" value={name} onChange={handleNameChange} />
-          <label htmlFor="email">Email:</label>
-          <input type="email" id="email" value={email} onChange={handleEmailChange} />
-          <label htmlFor="password">Password:</label>
-          <input type="password" id="password" value={password} onChange={handlePasswordChange} />
-          <label htmlFor="birthdate">Birthdate:</label>
-          <input type="date" id="birthdate" value={birthdate} onChange={handleBirthdateChange} />
+        <Form>
+          <Form.Item label="Name">
+            <Input value={name} onChange={handleNameChange} />
+          </Form.Item>
+          <Form.Item label="Email">
+            <Input type="email" value={email} onChange={handleEmailChange} />
+          </Form.Item>
+          <Form.Item label="Password">
+            <Input.Password value={password} onChange={handlePasswordChange} />
+          </Form.Item>
+
+          <Form.Item name="upload" label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
+            <Upload
+              action=""
+              listType="picture-card"
+              beforeUpload={beforeUpload}
+              fileList={fileList}
+              onChange={handleChange}
+              accept=".png,.jpg,.jpeg"
+              multiple={false}>
+              {fileList.length === 0 ? (
+                <div>
+                  <PlusOutlined />
+                  <div
+                    style={{
+                      marginTop: 8,
+                    }}
+                  >
+                    Upload
+                  </div>
+                </div>
+              ) : null}
+
+            </Upload>
+          </Form.Item>
+
           <div className="edit-buttons">
-            <button onClick={handleSaveClick}>Save</button>
-            <button onClick={handleCancelClick}>Cancel</button>
+            <Button type="primary" onClick={handleSaveClick}>
+              Save
+            </Button>
+            <Button onClick={handleCancelClick}>Cancel</Button>
           </div>
-        </form>
+        </Form>
       ) : (
-        <button onClick={handleEditClick}>Edit</button>
+        <Button onClick={handleEditClick}>Edit</Button>
       )}
     </div>
   );

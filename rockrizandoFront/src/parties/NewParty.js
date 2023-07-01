@@ -323,7 +323,7 @@ const NewParty = () => {
                             return (
                                 <React.Fragment>
                                     <Button type="primary" htmlType="submit" disabled={!formIsComplete}>
-                                        Log In
+                                        Create
                                     </Button>
 
                                     {loading && (
