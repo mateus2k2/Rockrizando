@@ -1,144 +1,209 @@
-import React, { useState } from 'react';
 import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useSignIn, useIsAuthenticated } from 'react-auth-kit';
+import jwt_decode from "jwt-decode";
+import { Button, Form, Input, Spin, message } from 'antd';
+import antIcon from '../shared/Spin.js';
+import { validatePasswordPromise,validadeNamePromise, validadeEmailPromise, validatePassword, validadeEmail } from '../shared/Validators.js';
 
-import './UserProfile.css'; // Importando o arquivo CSS personalizado
 
-const UserProfile = () => {
+const CreateUser = () => {
+  const [loading, setLoading] = useState(false);
+  const signIn = useSignIn();
+  const navigate = useNavigate();
+  const isAuthenticated = useIsAuthenticated();
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
-    profilePicture: null,
+    dateOfBirth: '',
   });
   const [errors, setErrors] = useState({});
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleChange = (e) => {
-    if (e.target.name === 'profilePicture') {
-      setFormData({ ...formData, [e.target.name]: e.target.files[0] });
-    } else {
-      setFormData({ ...formData, [e.target.name]: e.target.value });
+  // Redirect to home page if user is already logged in
+  const handleRedirect = () => {
+    if (isAuthenticated()) {
+      navigate('/');
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const validationErrors = validateForm();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      setSuccessMessage('');
+  useEffect(() => {
+    handleRedirect();
+  }, []);
+
+  // Handle form submission
+  const onFinish = async (values) => {
+    let token;
+
+    const userData = {
+      name: values.name,
+      email: values.email,
+      password: values.password,
+      confirmPassword: values.confirmPassword,
+      dateOfBirth: values.dateOfBirth,
+    };
+
+    // Send create user request
+    try {
+      setLoading(true);
+      const response = await axios.post('/api/create_user', userData);
+      console.log('Usuário criado com sucesso:', response.data);
+      setSuccessMessage('Usuário criado com sucesso!');
       setErrorMessage('');
-    } else {
-      const userData = new FormData();
-      userData.append('name', formData.name);
-      userData.append('email', formData.email);
-      userData.append('password', formData.password);
-      userData.append('confirmPassword', formData.confirmPassword);
-      if (formData.profilePicture) {
-        userData.append('profilePicture', formData.profilePicture);
-      }
 
-      try {
-        const response = await axios.post('/api/update_user', userData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-        console.log('Dados do usuário atualizados:', response.data);
-        setSuccessMessage('Dados do usuário atualizados com sucesso!');
-        setErrorMessage('');
-        setErrors({});
-      } catch (error) {
-        console.error('Erro ao atualizar dados do usuário:', error);
-        setErrorMessage('Erro ao atualizar dados do usuário. Por favor, tente novamente.');
-        setSuccessMessage('');
-      }
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        dateOfBirth: '',
+      });
+      setErrors({});
+    } catch (error) {
+      setLoading(false);
+      console.error('Erro ao criar usuário:', error);
+      setErrorMessage('Erro ao criar usuário. Por favor, tente novamente.');
+      setSuccessMessage('');
     }
   };
 
-  const validateForm = () => {
-    const errors = {};
-    if (formData.password.length > 0 && formData.password.length < 6) {
-      errors.password = 'A senha deve ter pelo menos 6 caracteres';
-    }
-    if (formData.password !== formData.confirmPassword) {
-      errors.confirmPassword = 'As senhas não correspondem';
-    }
-    return errors;
+  // Handle form submission errors
+  const onFinishFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
   };
 
   return (
-    <div className="user-profile">
-      <div className="profile-header">
-        <div className="profile-picture">
-          <img src={formData.profilePicture} alt="Foto de Perfil" />
-        </div>
-        <h1>{formData.name}</h1>
-      </div>
+    <div>
+      <h1>Criação de Novo Usuário</h1>
       {successMessage && <p className="success">{successMessage}</p>}
       {errorMessage && <p className="error">{errorMessage}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Nome:</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Senha:</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-          {errors.password && <span className="error">{errors.password}</span>}
-        </div>
-        <div>
-          <label>Confirmar Senha:</label>
-          <input
-            type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-          />
-          {errors.confirmPassword && (
-            <span className="error">{errors.confirmPassword}</span>
-          )}
-        </div>
-        <div>
-          <label>Foto de Perfil:</label>
-          <input
-            type="file"
-            name="profilePicture"
-            accept="image/*"
-            onChange={handleChange}
-          />
-        </div>
-        <button type="submit">Atualizar Perfil</button>
-      </form>
-      <div>
-        <h2>Festas Participadas</h2>
-        {/* Renderize aqui a lista de festas participadas pelo usuário */}
-      </div>
+      <Form
+        name="createUser"
+        labelCol={{
+          span: 8,
+        }}
+        wrapperCol={{
+          span: 16,
+        }}
+        style={{
+          maxWidth: 600,
+        }}
+        initialValues={{
+          remember: true,
+        }}
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+        autoComplete="off"
+      >
+        <Form.Item
+          label="Nome"
+          name="name"
+          rules={[
+            {
+              required: true,
+              message: 'Por favor, insira o nome!',
+            },
+            { validator: validadeNamePromise }
+          ]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          label="Email"
+          name="email"
+          rules={[
+            {
+              required: true,
+              message: 'Por favor, insira o email!',
+            },
+            { validator: validadeEmailPromise },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          label="Senha"
+          name="password"
+          rules={[
+            {
+              required: true,
+              message: 'Por favor, insira a senha!',
+            },
+            { validator: validatePasswordPromise },
+          ]}
+        >
+          <Input.Password />
+        </Form.Item>
+
+        <Form.Item
+          label="Confirme a Senha"
+          name="confirmPassword"
+          rules={[
+            {
+              required: true,
+              message: 'Por favor, confirme a senha!',
+            },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('password') === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject('As senhas não correspondem!');
+              },
+            }),
+          ]}
+        >
+          <Input.Password />
+        </Form.Item>
+
+        <Form.Item
+          label="Data de Nascimento"
+          name="dateOfBirth"
+          rules={[
+            {
+              required: true,
+              message: 'Por favor, insira a data de nascimento!',
+            },
+          ]}
+        >
+          <Input type="date" />
+        </Form.Item>
+
+        <Form.Item
+          shouldUpdate
+          wrapperCol={{
+            offset: 8,
+            span: 16,
+          }}
+        >
+          {({ getFieldsValue }) => {
+            const { name, email, password, confirmPassword, dateOfBirth } = getFieldsValue();
+            const formIsComplete = name && validadeEmail(email) && validatePassword(password) && confirmPassword && dateOfBirth;
+
+            return (
+              <React.Fragment>
+                <Button type="primary" htmlType="submit" disabled={!formIsComplete}>
+                  Criar Usuário
+                </Button>
+
+                {loading && (
+                  <div style={{ marginTop: '10px' }}>
+                    <Spin indicator={antIcon} />
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          }}
+        </Form.Item>
+      </Form>
     </div>
   );
 };
 
-export default UserProfile;
+export default CreateUser;
