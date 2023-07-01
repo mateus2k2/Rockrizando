@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 import React, { useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import { useSignIn } from 'react-auth-kit';
+import { useNavigate } from 'react-router-dom';
+import { useAuthHeader } from 'react-auth-kit';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 
 
@@ -19,12 +19,13 @@ const normFile = (e) => {
 };
 
 const NewParty = () => {
-    const [loading/* , setLoading */] = useState(false);
-    // const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
     const { TextArea } = Input;
     const [form] = Form.useForm()
     const [addressOptions, setAddressOptions] = useState([]);
     const [fileList, setFileList] = useState([]);
+    const authHeader = useAuthHeader()
 
     const handleAddressSearch = value => {
         const API_KEY = 'pk.eyJ1IjoibWF0ZXVzMmsyIiwiYSI6ImNsYmd4ZmV3MzA2ZTkzd2xjMDgzdWR2ejYifQ.RudfKTpz0CtaADWcoei8WA';
@@ -50,39 +51,66 @@ const NewParty = () => {
 
     // Handle form submission
     const onFinish = async (values) => {
+        const partyDate = values.partyDate; // Assuming values.partyDate is a valid datetime object
+        const formattedPartyDate = `${partyDate['$D'].toString().padStart(2, '0')}-${(partyDate['$M'] + 1).toString().padStart(2, '0')}-${partyDate['$y']}`;
 
+        const partyData = {
+            location: values.address,
+            description: values.description,
+            name: values.name,
+            party_date: formattedPartyDate,
+            ticket_type: values.ticketType,
+        };
+
+        console.log(fileList[0])
         const formData = new FormData();
-        formData.append('image', values.upload[0]);
-        console.log(values.upload[0])
-        console.log(formData)
+        formData.append('party_picture', fileList[0]);
+        formData.append('name', values.name);
 
-        // axios.post('/upload', formData)
-        //     .then(response => {
-        //         // Handle response from the server
-        //         message.success('Image uploaded successfully');
-        //     })
-        //     .catch(error => {
-        //         // Handle error
-        //         message.error('Image upload failed');
-        //         console.error(error);
-        //     });
+        try {
+            setLoading(true)
+            // await axios.post('http://localhost:5000/newPartyData', partyData, {
+            //     headers: {
+            //         Authorization: authHeader(),
+            //     },
+            // });
 
-        // // Send login request
-        // try {
-        //     setLoading(true)
-        //     const response = await axios.post('http://localhost:5000/login', loginData);
-        //     token = response.data.token;
-        //     message.success('Logged in successfully! Redirecting...');
-        //     navigate('/');
-        // }
-        // catch (error) {
-        //     setLoading(false)
-        //     console.error('Login failed:', error);
-        //     message.error('Failed to log in. Please check your credentials and try again.');
-        //     return false;
-        // }
+            const responsePicture = await axios.post('http://localhost:5000/newPartyPicture', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: authHeader(),
+                },
+            });
 
-        // return true;
+            // let url = "http://localhost:5000/newPartyPicture"
+            // fetch(url, {
+            //     method: "POST",
+            //     body: formData,
+            //     headers: {
+            //         'Content-Type': 'multipart/form-data',
+            //         Authorization: authHeader(),
+            //     },                
+            // })
+            //     .then(function (response) {
+            //         return response.json()
+            //     })
+            //     .then(function (res) {
+            //         console.log('success')
+            //         console.log(res)
+            //     })
+
+            // console.log(responseData.data)
+            console.log(responsePicture)
+            message.success('Party Added! Redirecting...');
+            // navigate('/');
+        }
+        catch (error) {
+            setLoading(false)
+            console.error('Add Party failed:', error);
+            message.error('Failed to add party.');
+            return false;
+        }
+
     };
 
     // Handle form submission errors
@@ -94,12 +122,12 @@ const NewParty = () => {
     const beforeUpload = (file) => {
         if (fileList.length >= 1) {
             message.error('You can only upload one file');
-            return false; // Prevent upload
+            return false;
         }
         else {
             setFileList([file]);
         }
-        return false; // Prevent automatic upload
+        return false;
     };
 
     const handleChange = ({ fileList }) => {
@@ -190,7 +218,7 @@ const NewParty = () => {
                         <Form.List
                             name="ticketType"
                             initialValue={[
-                                { Description: "", Name: "", Price: "" },
+                                { description: "", name: "", price: "" },
                             ]}
                             rules={[
                                 {
@@ -216,7 +244,7 @@ const NewParty = () => {
                                                 <Form.Item
                                                     noStyle
                                                     {...field}
-                                                    name={[field.name, 'Name']}
+                                                    name={[field.name, 'name']}
                                                     rules={[{ required: true, message: 'Missing Name' }]}
                                                     key={field.key + 2}
                                                 >
@@ -227,7 +255,7 @@ const NewParty = () => {
                                                 <Form.Item
                                                     noStyle
                                                     {...field}
-                                                    name={[field.name, 'Price']}
+                                                    name={[field.name, 'price']}
                                                     rules={[{ required: true, message: 'Missing Price' }]}
                                                     key={field.key + 3}
                                                 >
@@ -238,7 +266,7 @@ const NewParty = () => {
                                                 <Form.Item
                                                     noStyle
                                                     {...field}
-                                                    name={[field.name, 'Description']}
+                                                    name={[field.name, 'description']}
                                                     rules={[{ required: true, message: 'Missing Description' }]}
                                                     key={field.key + 4}
                                                 >
@@ -293,7 +321,7 @@ const NewParty = () => {
                                         Upload
                                     </div>
                                 </div>
-                            ): null}
+                            ) : null}
 
                         </Upload>
                     </Form.Item>

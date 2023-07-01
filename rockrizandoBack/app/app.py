@@ -3,10 +3,11 @@ from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
 from flask_cors import CORS
+import json
 
 import os
 
-from app.resources.party import NewParty
+from app.resources.party import NewPartyPicture, NewPartyData
 from app.resources.user import UserRegister, UserLogin
 from app.resources.files import UserFile, PartyFile
 from app.config.config import postgresqlConfig
@@ -36,7 +37,8 @@ api.add_resource(UserFile, '/files/user/<string:filename>', methods=['GET'])
 api.add_resource(PartyFile, '/files/party/<string:filename>', methods=['GET'])
 api.add_resource(UserRegister, '/register', methods=['POST'])
 api.add_resource(UserLogin, '/login', methods=['POST'])
-api.add_resource(NewParty, '/newParty', methods=['POST'])
+api.add_resource(NewPartyData, '/newPartyData', methods=['POST'])
+api.add_resource(NewPartyPicture, '/newPartyPicture', methods=['POST'])
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port='5000',debug=True)
@@ -48,3 +50,13 @@ if __name__ == '__main__':
 # flask run --host=localhost
     
 # flask --app ./app/app.py --debug run
+
+
+
+# Terminar formulario de Cadastro
+# Requisição de cadastro
+
+# Rota e front pra pegar as festas compradas por um usuario
+# Rota e front pra pegar as festas criadas por um usuario
+
+# Chamar a rota de criacao de festa no front
