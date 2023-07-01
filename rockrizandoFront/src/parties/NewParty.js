@@ -74,7 +74,7 @@ const NewParty = () => {
                 },
             });
 
-            const responsePicture = await axios.post('http://localhost:5000/newPartyPicture', formData, {
+            await axios.post('http://localhost:5000/newPartyPicture', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     Authorization: authHeader(),

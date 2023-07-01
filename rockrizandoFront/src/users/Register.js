@@ -1,28 +1,35 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSignIn, useIsAuthenticated } from 'react-auth-kit';
-import jwt_decode from "jwt-decode";
-import { Button, Form, Input, Spin, message } from 'antd';
+import { useIsAuthenticated } from 'react-auth-kit';
+import { Button, Form, Input, Spin, Upload, message, DatePicker } from 'antd';
+import { PlusOutlined } from '@ant-design/icons'
 import antIcon from '../shared/Spin.js';
-import { validatePasswordPromise,validadeNamePromise, validadeEmailPromise, validatePassword, validadeEmail } from '../shared/Validators.js';
+import { validatePasswordPromise, validadeNamePromise, validadeEmailPromise, validatePassword, validadeEmail } from '../shared/Validators.js';
 
+const normFile = (e) => {
+  if (Array.isArray(e)) {
+    return e;
+  }
+  return e?.fileList;
+};
 
 const CreateUser = () => {
+  const [fileList, setFileList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const signIn = useSignIn();
   const navigate = useNavigate();
   const isAuthenticated = useIsAuthenticated();
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    dateOfBirth: '',
-  });
-  const [errors, setErrors] = useState({});
+
+  const beforeUpload = (file) => {
+    if (fileList.length >= 1) {
+      message.error('You can only upload one file');
+      return false;
+    }
+    else {
+      setFileList([file]);
+    }
+    return false;
+  };
 
   // Redirect to home page if user is already logged in
   const handleRedirect = () => {
@@ -33,41 +40,37 @@ const CreateUser = () => {
 
   useEffect(() => {
     handleRedirect();
-  }, []);
+  });
 
   // Handle form submission
   const onFinish = async (values) => {
-    let token;
+    const formattedPartyDate = `${values.dateOfBirth['$D'].toString().padStart(2, '0')}-${(values.dateOfBirth['$M'] + 1).toString().padStart(2, '0')}-${values.dateOfBirth['$y']}`;
 
-    const userData = {
-      name: values.name,
-      email: values.email,
-      password: values.password,
-      confirmPassword: values.confirmPassword,
-      dateOfBirth: values.dateOfBirth,
-    };
+    const formData = new FormData();
+    formData.append('profile_picture', fileList[0].originFileObj);
+    formData.append('username', values.name);
+    formData.append('email', values.email);
+    formData.append('birth_date', formattedPartyDate);
+    formData.append('password', values.password);
 
-    // Send create user request
     try {
-      setLoading(true);
-      const response = await axios.post('/api/create_user', userData);
-      console.log('Usuário criado com sucesso:', response.data);
-      setSuccessMessage('Usuário criado com sucesso!');
-      setErrorMessage('');
+      setLoading(true)
 
-      setFormData({
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        dateOfBirth: '',
+      await axios.post('http://localhost:5000/register', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
-      setErrors({});
-    } catch (error) {
-      setLoading(false);
-      console.error('Erro ao criar usuário:', error);
-      setErrorMessage('Erro ao criar usuário. Por favor, tente novamente.');
-      setSuccessMessage('');
+
+      // console.log(response.data)
+      message.success('User Registred! Redirecting...');
+      navigate('/login');
+    }
+    catch (error) {
+      setLoading(false)
+      console.error('User Register failed:', error);
+      message.error('Failed to User Register.');
+      return false;
     }
   };
 
@@ -76,133 +79,171 @@ const CreateUser = () => {
     console.log('Failed:', errorInfo);
   };
 
+  const handleChange = ({ fileList }) => {
+    setFileList(fileList);
+  };
+
   return (
-    <div>
-      <h1>Criação de Novo Usuário</h1>
-      {successMessage && <p className="success">{successMessage}</p>}
-      {errorMessage && <p className="error">{errorMessage}</p>}
-      <Form
-        name="createUser"
-        labelCol={{
-          span: 8,
-        }}
-        wrapperCol={{
-          span: 16,
-        }}
+    <React.Fragment>
+      <h1 className="centerText">Register</h1>
+      <div
         style={{
-          maxWidth: 600,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
         }}
-        initialValues={{
-          remember: true,
-        }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        autoComplete="off"
       >
-        <Form.Item
-          label="Nome"
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: 'Por favor, insira o nome!',
-            },
-            { validator: validadeNamePromise }
-          ]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[
-            {
-              required: true,
-              message: 'Por favor, insira o email!',
-            },
-            { validator: validadeEmailPromise },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Senha"
-          name="password"
-          rules={[
-            {
-              required: true,
-              message: 'Por favor, insira a senha!',
-            },
-            { validator: validatePasswordPromise },
-          ]}
-        >
-          <Input.Password />
-        </Form.Item>
-
-        <Form.Item
-          label="Confirme a Senha"
-          name="confirmPassword"
-          rules={[
-            {
-              required: true,
-              message: 'Por favor, confirme a senha!',
-            },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue('password') === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject('As senhas não correspondem!');
-              },
-            }),
-          ]}
-        >
-          <Input.Password />
-        </Form.Item>
-
-        <Form.Item
-          label="Data de Nascimento"
-          name="dateOfBirth"
-          rules={[
-            {
-              required: true,
-              message: 'Por favor, insira a data de nascimento!',
-            },
-          ]}
-        >
-          <Input type="date" />
-        </Form.Item>
-
-        <Form.Item
-          shouldUpdate
+        
+        <Form
+          name="createUser"
+          labelCol={{
+            span: 8,
+          }}
           wrapperCol={{
-            offset: 8,
             span: 16,
           }}
-        >
-          {({ getFieldsValue }) => {
-            const { name, email, password, confirmPassword, dateOfBirth } = getFieldsValue();
-            const formIsComplete = name && validadeEmail(email) && validatePassword(password) && confirmPassword && dateOfBirth;
-
-            return (
-              <React.Fragment>
-                <Button type="primary" htmlType="submit" disabled={!formIsComplete}>
-                  Criar Usuário
-                </Button>
-
-                {loading && (
-                  <div style={{ marginTop: '10px' }}>
-                    <Spin indicator={antIcon} />
-                  </div>
-                )}
-              </React.Fragment>
-            );
+          style={{
+            maxWidth: 600,
           }}
-        </Form.Item>
-      </Form>
-    </div>
+          initialValues={{
+            remember: true,
+          }}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          autoComplete="off"
+        >
+          <Form.Item
+            label="Nome"
+            name="name"
+            rules={[
+              {
+                required: true,
+                message: 'Por favor, insira o nome!',
+              },
+              { validator: validadeNamePromise }
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[
+              {
+                required: true,
+                message: 'Por favor, insira o email!',
+              },
+              { validator: validadeEmailPromise },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="Senha"
+            name="password"
+            rules={[
+              {
+                required: true,
+                message: 'Por favor, insira a senha!',
+              },
+              { validator: validatePasswordPromise },
+            ]}
+          >
+            <Input.Password />
+          </Form.Item>
+
+          <Form.Item
+            label="Confirme a Senha"
+            name="confirmPassword"
+            rules={[
+              {
+                required: true,
+                message: 'Por favor, confirme a senha!',
+              },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('password') === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject('As senhas não correspondem!');
+                },
+              }),
+            ]}
+          >
+            <Input.Password />
+          </Form.Item>
+
+          <Form.Item
+            label="date Of Birth"
+            name="dateOfBirth"
+            rules={[
+              {
+                required: true,
+                message: 'Please input date Of Birth!',
+              },
+              { validator: validatePasswordPromise },
+            ]}
+          >
+            <DatePicker />
+          </Form.Item>
+
+          <Form.Item name="upload" label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
+            <Upload
+              action=""
+              listType="picture-card"
+              beforeUpload={beforeUpload}
+              fileList={fileList}
+              onChange={handleChange}
+              accept=".png,.jpg,.jpeg"
+              multiple={false}>
+              {fileList.length === 0 ? (
+                <div>
+                  <PlusOutlined />
+                  <div
+                    style={{
+                      marginTop: 8,
+                    }}
+                  >
+                    Upload
+                  </div>
+                </div>
+              ) : null}
+
+            </Upload>
+          </Form.Item>
+
+          <Form.Item
+            shouldUpdate
+            wrapperCol={{
+              offset: 8,
+              span: 16,
+            }}
+          >
+            {({ getFieldsValue }) => {
+              const { name, email, password, confirmPassword, dateOfBirth } = getFieldsValue();
+              const formIsComplete = name && validadeEmail(email) && validatePassword(password) && confirmPassword && dateOfBirth;
+
+              return (
+                <React.Fragment>
+                  <Button type="primary" htmlType="submit" disabled={!formIsComplete}>
+                    Criar Usuário
+                  </Button>
+
+                  {loading && (
+                    <div style={{ marginTop: '10px' }}>
+                      <Spin indicator={antIcon} />
+                    </div>
+                  )}
+                </React.Fragment>
+              );
+            }}
+          </Form.Item>
+        </Form>
+      </div>
+    </React.Fragment>
   );
 };
 
