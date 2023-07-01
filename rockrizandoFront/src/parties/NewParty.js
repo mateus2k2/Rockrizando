@@ -62,18 +62,17 @@ const NewParty = () => {
             ticket_type: values.ticketType,
         };
 
-        console.log(fileList[0])
         const formData = new FormData();
-        formData.append('party_picture', fileList[0]);
+        formData.append('party_picture', fileList[0].originFileObj);
         formData.append('name', values.name);
 
         try {
             setLoading(true)
-            // await axios.post('http://localhost:5000/newPartyData', partyData, {
-            //     headers: {
-            //         Authorization: authHeader(),
-            //     },
-            // });
+            await axios.post('http://localhost:5000/newPartyData', partyData, {
+                headers: {
+                    Authorization: authHeader(),
+                },
+            });
 
             const responsePicture = await axios.post('http://localhost:5000/newPartyPicture', formData, {
                 headers: {
@@ -82,27 +81,10 @@ const NewParty = () => {
                 },
             });
 
-            // let url = "http://localhost:5000/newPartyPicture"
-            // fetch(url, {
-            //     method: "POST",
-            //     body: formData,
-            //     headers: {
-            //         'Content-Type': 'multipart/form-data',
-            //         Authorization: authHeader(),
-            //     },                
-            // })
-            //     .then(function (response) {
-            //         return response.json()
-            //     })
-            //     .then(function (res) {
-            //         console.log('success')
-            //         console.log(res)
-            //     })
-
             // console.log(responseData.data)
-            console.log(responsePicture)
+            // console.log(responsePicture)
             message.success('Party Added! Redirecting...');
-            // navigate('/');
+            navigate('/');
         }
         catch (error) {
             setLoading(false)

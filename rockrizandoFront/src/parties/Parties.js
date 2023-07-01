@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Spin, Input } from 'antd';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 import antIcon from '../shared/Spin.js';
+import axios from 'axios';
 
 const { Search } = Input;
 
@@ -16,47 +17,12 @@ const Parties = () => {
 
   const fetchData = async () => {
     try {
-      // Simulating the fetch request delay with a setTimeout
-      setTimeout(() => {
-        // Mock response data
-        const mockData = [
-          {
-            id: 1,
-            title: 'Card 1',
-            description: 'This is the description for Card 1.',
-          },
-          {
-            id: 2,
-            title: 'Card 2',
-            description: 'This is the description for Card 2.',
-          },
-          {
-            id: 3,
-            title: 'Card 3',
-            description: 'This is the description for Card 3.',
-          },
-          {
-            id: 4,
-            title: 'Card 4',
-            description: 'This is the description for Card 4.',
-          },
-          {
-            id: 5,
-            title: 'Card 5',
-            description: 'This is the description for Card 5.',
-          },
-          {
-            id: 6,
-            title: 'Card 6',
-            description: 'This is the description for Card 6.',
-          },
-        ];
-
-        setData(mockData);
-        setLoading(false);
-      }, 1000);
+      const response = await axios.get(`http://localhost:5000/parties`);
+      console.log(response.data);
+      setData(response.data);
+      setLoading(false);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.log(error);
     }
   };
 
@@ -65,7 +31,7 @@ const Parties = () => {
   };
 
   const filteredData = data.filter(item =>
-    item.title.toLowerCase().includes(searchQuery.toLowerCase())
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -86,7 +52,7 @@ const Parties = () => {
             <div>
               {filteredData.map(item => (
                 <Link key={item.id} to={`/party/${item.id}`}>
-                  <Card title={item.title} style={{ width: 300 }}>
+                  <Card title={item.name} style={{ width: 300 }}>
                     <p>{item.description}</p>
                   </Card>
                 </Link>

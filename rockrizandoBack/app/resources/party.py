@@ -1,9 +1,10 @@
-from flask import jsonify
+from flask import jsonify, request
 from app.util.validators import string_to_date
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required, get_jwt_identity, JWTManager
 from app.models.party import PartyModel
 from app.models.ticket import TicketModel
+from app.models.participants import ParticipantsModel
 # from app.util.logz import create_logger
 from sqlalchemy import func
 from app.config.db import db
@@ -34,14 +35,14 @@ class NewPartyData(Resource):
         location = data['location']
         ticket_types = data['ticket_type']
         party_date = None
-        
+        created_id = get_jwt_identity()
 
         try:
             party_date = datetime.strptime(party_date_str, '%d-%m-%Y')
         except ValueError:
             return {'message': 'Invalid Party Date'}, 400
 
-        party = PartyModel(name=name, description=description, party_date=party_date, location=location)
+        party = PartyModel(name=name, description=description, party_date=party_date, location=location, creator_id=created_id['user'])
         party.save_to_db()
 
         for ticket_type in ticket_types:
@@ -66,10 +67,13 @@ class NewPartyPicture(Resource):
         name = data['name']
         party_picture = None
 
+
+
         party = PartyModel.find_by_name(name)
+        print(name)
         print(data['party_picture'])
         if data['party_picture']:
-            print(11)
+            print("Achou a imagem")
             file = data['party_picture']
             if file.filename == '':
                 return {'message': 'No file selected'}, 400
@@ -85,4 +89,33 @@ class NewPartyPicture(Resource):
         party.save_to_db()
 
         return {'message': 'party has been created successfully.'}, 201
-        
+
+
+
+class PartiesData(Resource):
+
+    def get(self):
+        parties = PartyModel.query.all()
+        party_data = []
+
+        for party in parties:
+            party_tickets = []
+            for ticket in party.tickets:
+                party_tickets.append({
+                    'id': ticket.id,
+                    'name': ticket.name,
+                    'price': ticket.price,
+                    'description': ticket.description
+                })
+
+            party_data.append({
+                'id': party.id,
+                'name': party.name,
+                'description': party.description,
+                'party_date': party.party_date.isoformat(),
+                'location': party.location,
+                'party_picture': party.party_picture,
+                'tickets': party_tickets
+            })
+
+        return party_data, 200

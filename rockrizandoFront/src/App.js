@@ -58,13 +58,13 @@ function App() {
 
                 <Route path={'/user/:userid/purchases/'} element={
                   <RequireAuth loginPath={'/login'}>
-                    <UserProfile />
+                    {/* < PartyPurchases/> */}
                   </RequireAuth>
                 } />           
 
                 <Route path={'/user/:userid/parties/'} element={
                   <RequireAuth loginPath={'/login'}>
-                    <UserProfile />
+                    {/* < PartyParties/> */}
                   </RequireAuth>
                 } />
 
