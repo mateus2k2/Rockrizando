@@ -14,6 +14,9 @@ import NewParty from './parties/NewParty'
 import Login from './users/Login'
 import Register from './users/Register'
 import UserProfile from './users/UserProfile'
+import People from './friends/People'
+import Friends from './friends/Friends'
+import Profile from './friends/Profile'
 
 import Sidebar from './shared/Navegation/Sider'
 
@@ -49,12 +52,25 @@ function App() {
 
                 <Route exact path="/login" element={<Login />} />
                 <Route exact path="/register" element={<Register />} />
+                <Route exact path="/people" element={<People />} />
 
-                <Route path={'/user/:userid/profile/'} element={
+                <Route path={'/user/profile/'} element={
                   <RequireAuth loginPath={'/login'}>
                     <UserProfile />
                   </RequireAuth>
                 } />
+
+                <Route path={'/user/:userid/profile/'} element={
+                  <RequireAuth loginPath={'/login'}>
+                    <Profile />
+                  </RequireAuth>
+                } />
+
+                <Route path={'/user/:userid/friends/'} element={
+                  <RequireAuth loginPath={'/login'}>
+                    <Friends />
+                  </RequireAuth>
+                } />  
 
                 <Route path={'/user/:userid/purchases/'} element={
                   <RequireAuth loginPath={'/login'}>
@@ -65,6 +81,12 @@ function App() {
                 <Route path={'/user/:userid/parties/'} element={
                   <RequireAuth loginPath={'/login'}>
                     {/* < PartyParties/> */}
+                  </RequireAuth>
+                } />
+
+                <Route path={'/user/:userid/'} element={
+                  <RequireAuth loginPath={'/login'}>
+                    {/* <UserProfile /> */}
                   </RequireAuth>
                 } />
 

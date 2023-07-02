@@ -5,7 +5,8 @@ import {
   HomeOutlined,
   PlusOutlined,
   UserOutlined,
-  KeyOutlined
+  KeyOutlined,
+  TeamOutlined 
 } from '@ant-design/icons';
 import { Grid } from 'antd';
 import { useAuthUser, useIsAuthenticated } from 'react-auth-kit';
@@ -56,15 +57,21 @@ const Sidebar = () => {
       <Menu.Item key="newParty" icon={<PlusOutlined />}>
         <Link to="/party/new">New Party</Link>
       </Menu.Item>,
+      <Menu.Item key="People" icon={<TeamOutlined />}>
+        <Link to="/people">People</Link>
+      </Menu.Item>,
       <Menu.SubMenu key="profile" icon={<UserOutlined />} title="Profile">
         <Menu.Item key="editProfile">
-          <Link to={`/user/${userId}/profile/`}>Edit profile</Link>
+          <Link to={`/user/profile/`}>Edit profile</Link>
         </Menu.Item>
         <Menu.Item key="purchases">
           <Link to={`/user/${userId}/purchases/`}>Purchases</Link>
         </Menu.Item>
         <Menu.Item key="myParties">
           <Link to={`/user/${userId}/parties/`}>My Parties</Link>
+        </Menu.Item>
+        <Menu.Item key="friends">
+          <Link to={`/user/${userId}/friends/`}>My Friends</Link>
         </Menu.Item>
       </Menu.SubMenu>
     ];
@@ -76,6 +83,9 @@ const Sidebar = () => {
       </Menu.Item>,
       <Menu.Item key="login" icon={<KeyOutlined />}>
         <Link to="/login">Login/Register</Link>
+      </Menu.Item>,
+      <Menu.Item key="People" icon={<TeamOutlined  />}>
+        <Link to="/people">People</Link>
       </Menu.Item>
     ];
   }

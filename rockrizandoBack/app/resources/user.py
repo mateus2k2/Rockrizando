@@ -1,7 +1,6 @@
 from flask_restful import Resource, reqparse
 from flask import jsonify, request
-from flask_jwt_extended import create_access_token, jwt_required
-from flask_jwt_extended import current_user
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from app.models.user import UserModel
 from app.config.db import db
 from datetime import datetime
@@ -89,14 +88,16 @@ class UserRegister(Resource):
         return {'message': 'user has been created successfully.'}, 201
     
     
-class GetUserData(Resource):
+class UserData(Resource):
     def __init__(self):
         pass
 
-    @jwt_required()
+    # @jwt_required()
     def get(self, userID):
+        # userJWT = get_jwt_identity()
         user = UserModel.find_by_id(userID)
         if not user:
+        # if not user or userJWT['user'] != userID:
             return {'message': 'User not found'}, 404
         
         return {
@@ -105,3 +106,18 @@ class GetUserData(Resource):
             'username': user.username,
             'birth_date': user.birth_date.strftime('%d-%m-%Y'),
         }, 200        
+
+
+class UsersData(Resource):
+
+    def get(self):
+        users = UserModel.query.all()
+        user_data = []
+        for user in users:
+            user_data.append({
+                'id': user.id,
+                'email': user.email,
+                'username': user.username,
+                'birth_date': str(user.birth_date),
+            })
+        return {'users': user_data}, 200

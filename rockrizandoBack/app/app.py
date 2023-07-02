@@ -3,12 +3,10 @@ from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
 from flask_cors import CORS
-import json
-
-import os
 
 from app.resources.party import NewPartyPicture, NewPartyData, PartiesData
-from app.resources.user import UserRegister, UserLogin, GetUserData
+from app.resources.user import UserRegister, UserLogin, UserData, UsersData
+from app.resources.friends import FriendRequest, FriendRespond, FriendsData
 from app.resources.files import UserFile, PartyFile
 from app.config.config import postgresqlConfig
 
@@ -42,9 +40,13 @@ api.add_resource(UserLogin, '/login', methods=['POST'])
 api.add_resource(NewPartyData, '/newPartyData', methods=['POST'])
 api.add_resource(NewPartyPicture, '/newPartyPicture', methods=['POST'])
 
-api.add_resource(GetUserData, '/user/<int:userID>', methods=['GET'])
-
+api.add_resource(UserData, '/user/<int:userID>', methods=['GET'])
+api.add_resource(UsersData, '/users/', methods=['GET'])
 api.add_resource(PartiesData, '/parties/', methods=['GET'])
+
+api.add_resource(FriendRequest, '/user/friend/request', methods=['POST'])
+api.add_resource(FriendRespond, '/user/friend/respond', methods=['POST'])
+api.add_resource(FriendsData, '/user/friends', methods=['GET'])
 
 
 if __name__ == '__main__':

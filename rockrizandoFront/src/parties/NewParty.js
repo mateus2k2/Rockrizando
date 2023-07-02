@@ -29,9 +29,7 @@ const NewParty = () => {
 
     const handleAddressSearch = value => {
         const API_KEY = 'pk.eyJ1IjoibWF0ZXVzMmsyIiwiYSI6ImNsYmd4ZmV3MzA2ZTkzd2xjMDgzdWR2ejYifQ.RudfKTpz0CtaADWcoei8WA';
-        const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-            value
-        )}.json?access_token=${API_KEY}&autocomplete=true`;
+        const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(value)}.json?access_token=${API_KEY}&autocomplete=true`;
 
         axios
             .get(endpoint)
@@ -43,6 +41,24 @@ const NewParty = () => {
             .catch(error => {
                 console.error('Error fetching address suggestions:', error);
             });
+
+        // const API_KEY = 'AIzaSyCT8VESZ2hwq7FZTRFCv1ObUPZcm-WJhi8';
+        // const endpoint = `https://maps.googleapis.com/maps/api/place/autocomplete/json
+        //                     ?input=${encodeURIComponent(value)}
+        //                     &language=pt_BR
+        //                     &types=sublocality
+        //                     &key=${API_KEY}`;
+
+        // axios
+        //     .get(endpoint)
+        //     .then(response => {
+        //         const predictions = response.data.predictions;
+        //         const suggestions = predictions.map(prediction => prediction.description);
+        //         setAddressOptions(suggestions);
+        //     })
+        //     .catch(error => {
+        //         console.error('Error fetching address suggestions:', error);
+        //     });
     };
 
     const handleAddressSelect = value => {
