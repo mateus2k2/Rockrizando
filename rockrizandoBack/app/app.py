@@ -51,9 +51,10 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port='5000',debug=True)
 
 # docker run    --name rockrizandoDB    -p 5432:5432    -e POSTGRES_USER=postgres    -e POSTGRES_PASSWORD=postgres    -e POSTGRES_DB=rockrizando    -d    postgres
+# flask --app ./app/app.py --debug run
+
+
 # vf activate rockrizando
-    
 # export FLASK_APP=./app/app
 # flask run --host=localhost
     
-# flask --app ./app/app.py --debug run

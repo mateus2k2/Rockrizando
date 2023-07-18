@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Spin, Input } from 'antd';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { Link } from 'react-router-dom';
 import antIcon from '../shared/Spin.js';
 import axios from 'axios';
 
@@ -17,7 +17,7 @@ const Parties = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/parties`);
+      const response = await axios.get('http://localhost:3000/parties');
       setData(response.data);
       setLoading(false);
     } catch (error) {
