@@ -3,6 +3,7 @@ from app.util.validators import string_to_date
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required, get_jwt_identity, JWTManager
 from app.models.party import PartyModel
+from app.models.user import UserModel
 from app.models.ticket import TicketModel
 from app.models.participants import ParticipantsModel
 # from app.util.logz import create_logger
@@ -145,11 +146,108 @@ class PartyData(Resource):
             }
 
             return party_data, 200
+        
         else:
             return {'message': 'Party not found'}, 404
+
+class UserParties(Resource):
+
+    @jwt_required()
+    def get(self, userID):
+        jwt = get_jwt_identity()
         
-class PartieBuy(Resource):
+        if(jwt['user'] != userID):
+            return {'message': 'Unauthorized'}, 401
+        
+        parties = PartyModel.query.filter_by(creator_id=jwt['user']).all()
+        party_data = []
+        
+        for party in parties:
+            party_tickets = []
+            for ticket in party.tickets:
+                party_tickets.append({
+                    'id': ticket.id,
+                    'name': ticket.name,
+                    'price': ticket.price,
+                    'description': ticket.description
+                })
+
+            party_data.append({
+                'id': party.id,
+                'name': party.name,
+                'description': party.description,
+                'party_date': party.party_date.isoformat(),
+                'location': party.location,
+                'party_picture': party.party_picture,
+                'tickets': party_tickets
+            })
+
+        return party_data, 200
+
+class UserParty(Resource):
+
+    @jwt_required()
+    def get(self, userID, partyID):
+        jwt = get_jwt_identity()
+        
+        if(jwt['user'] != userID):
+            return {'message': 'Unauthorized'}, 401
+        
+        party = PartyModel.query.filter_by(creator_id=jwt['user'], id=partyID).first()
+        party_data = []
+        
+        party_tickets = []
+        for ticket in party.tickets:
+            party_tickets.append({
+                'id': ticket.id,
+                'name': ticket.name,
+                'price': ticket.price,
+                'description': ticket.description
+            })
+
+        party_data.append({
+            'id': party.id,
+            'name': party.name,
+            'description': party.description,
+            'party_date': party.party_date.isoformat(),
+            'location': party.location,
+            'party_picture': party.party_picture,
+            'tickets': party_tickets
+        })
+
+        return party_data, 200      
+
+class PartyBuy(Resource):
+
+    parser = reqparse.RequestParser()
+    parser.add_argument('name', type=str, required=True, help='Party name is required')
+    parser.add_argument('amount_and_tickets', type=dict, required=True, help='Amount and tickets data is required', action="append")
 
     @jwt_required()
     def post(self, partyID):
-        return 200
+        data = PartyBuy.parser.parse_args()
+
+        # Check if the party exists
+        party = PartyModel.find_by_id(partyID)
+        if not party:
+            return {'message': 'Party not found'}, 404
+
+        # Process participants data
+        participants_data = data['amount_and_tickets']
+
+        participants_list = []
+        for participant_data in participants_data:
+            
+            ticket_type = participant_data.get('ticketType')
+            participant_name = participant_data.get('name')
+            participant_email = participant_data.get('email')
+
+            # Perform any necessary validations on ticket_type, participant_name, participant_email
+
+            # Create and save the participant
+            participant = ParticipantsModel(user_id=None, party_id=partyID, ticket_id=None)
+            participant.save_to_db()
+
+            participants_list.append(participant.json())
+
+        return {'message': 'Purchase successful', 'participants': participants_list}, 201

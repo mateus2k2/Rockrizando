@@ -7,7 +7,7 @@ import json
 
 import os
 
-from app.resources.party import NewPartyPicture, NewPartyData, PartiesData, PartieBuy, PartyData
+from app.resources.party import NewPartyPicture, NewPartyData, PartiesData, PartyBuy, PartyData, UserParties, UserParty
 from app.resources.user import UserRegister, UserLogin, GetUserData, UpdateUserData
 from app.resources.files import UserFile, PartyFile
 from app.config.config import postgresqlConfig
@@ -43,11 +43,15 @@ api.add_resource(NewPartyData, '/newPartyData', methods=['POST'])
 api.add_resource(NewPartyPicture, '/newPartyPicture', methods=['POST'])
 
 api.add_resource(GetUserData, '/user/<int:userID>', methods=['GET'])
-api.add_resource(UpdateUserData, '/user/<int:userID>/update', methods=['PATCH']) # ----------------------
+api.add_resource(UpdateUserData, '/user/<int:userID>/update', methods=['PATCH'])
 
 api.add_resource(PartiesData, '/parties/', methods=['GET'])
-api.add_resource(PartyData, '/party/<int:partyID>/', methods=['GET']) # ----------------------
-api.add_resource(PartieBuy, '/party/<int:partyID>/buy', methods=['POST']) # ----------------------
+api.add_resource(PartyData, '/party/<int:partyID>/', methods=['GET'])
+api.add_resource(PartyBuy, '/party/<int:partyID>/buy', methods=['POST']) # ----------------------
+
+api.add_resource(UserParties, '/user/<int:userID>/parties/', methods=['GET']) # ----------------------
+api.add_resource(UserParty, '/user/<int:userID>/parties/<int:partyID>', methods=['GET']) # ----------------------
+
 
 
 
@@ -60,5 +64,5 @@ if __name__ == '__main__':
 
 # vf activate rockrizando
 # export FLASK_APP=./app/app
-# flask run --host=localhost
+# flask run --host=localhost 
     
