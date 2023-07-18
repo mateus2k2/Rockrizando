@@ -7,8 +7,8 @@ import json
 
 import os
 
-from app.resources.party import NewPartyPicture, NewPartyData, PartiesData
-from app.resources.user import UserRegister, UserLogin, GetUserData
+from app.resources.party import NewPartyPicture, NewPartyData, PartiesData, PartieBuy, PartyData
+from app.resources.user import UserRegister, UserLogin, GetUserData, UpdateUserData
 from app.resources.files import UserFile, PartyFile
 from app.config.config import postgresqlConfig
 
@@ -43,8 +43,12 @@ api.add_resource(NewPartyData, '/newPartyData', methods=['POST'])
 api.add_resource(NewPartyPicture, '/newPartyPicture', methods=['POST'])
 
 api.add_resource(GetUserData, '/user/<int:userID>', methods=['GET'])
+api.add_resource(UpdateUserData, '/user/<int:userID>/update', methods=['PATCH']) # ----------------------
 
 api.add_resource(PartiesData, '/parties/', methods=['GET'])
+api.add_resource(PartyData, '/party/<int:partyID>/', methods=['GET']) # ----------------------
+api.add_resource(PartieBuy, '/party/<int:partyID>/buy', methods=['POST']) # ----------------------
+
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse
 from flask import jsonify, request
-from flask_jwt_extended import create_access_token, jwt_required
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from flask_jwt_extended import current_user
 from app.models.user import UserModel
 from app.config.db import db
@@ -105,3 +105,52 @@ class GetUserData(Resource):
             'username': user.username,
             'birth_date': user.birth_date.strftime('%d-%m-%Y'),
         }, 200        
+
+
+class UpdateUserData(Resource):
+    parser = reqparse.RequestParser()  
+    parser.add_argument('email', type=str, required=True, help='Not Blank', location = 'form')
+    parser.add_argument('password', type=str, required=True, help='Not Blank', location = 'form')
+    parser.add_argument('username', type=str, required=True, help='Not Blank', location = 'form')
+    parser.add_argument('profile_picture', type=FileStorage, location='files', required=False)
+    
+    @jwt_required()
+    def patch(self, userID):
+        jwtID = get_jwt_identity()
+        
+        if(jwtID['user'] != userID):
+            return {'message': 'Unauthorized'}, 401
+        
+        data = UpdateUserData.parser.parse_args()
+                
+        email = data['email']
+        password = data['password']
+        username = data['username']
+        profile_picture = None
+        
+        user = UserModel.find_by_id(userID)
+        if not user:
+            return {'message': 'User not found'}, 404
+        
+        if UserModel.find_by_email(email) and user.email != email:
+            return {'message': 'user has already been created.'}, 400
+        
+        user.email = email
+        user.username = username
+        user.set_password(password)
+        
+        if data['profile_picture']:
+            file = data['profile_picture']
+            if file.filename == '':
+                return {'message': 'No file selected'}, 400
+            
+            file.filename = 'profile_picture_' + str(user.id) + '.jpg'
+            filename = secure_filename(file.filename)
+            file_path = os.path.join('./app/files/user', filename)
+            file.save(file_path)
+            profile_picture = file_path
+        
+        UserModel.set_profile_picture(user, profile_picture)
+        user.save_to_db()
+        
+        return {'message': 'user has been updated successfully.'}, 201

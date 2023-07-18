@@ -119,3 +119,14 @@ class PartiesData(Resource):
             })
 
         return party_data, 200
+    
+class PartyData(Resource):
+
+    def get(self, partyID):
+        return 200
+    
+class PartieBuy(Resource):
+
+    @jwt_required()
+    def post(self, partyID):
+        return 200
