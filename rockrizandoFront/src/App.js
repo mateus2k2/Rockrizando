@@ -14,6 +14,7 @@ import NewParty from './parties/NewParty'
 import Login from './users/Login'
 import Register from './users/Register'
 import UserProfile from './users/UserProfile'
+import PartyDetails from './parties/PartyDetails'
 
 import Sidebar from './shared/Navegation/Sider'
 
@@ -49,6 +50,7 @@ function App() {
 
                 <Route exact path="/login" element={<Login />} />
                 <Route exact path="/register" element={<Register />} />
+                <Route exact path="/party/:partyId/" element={<PartyDetails />} />
 
                 <Route path={'/user/:userid/profile/'} element={
                   <RequireAuth loginPath={'/login'}>
@@ -75,12 +77,6 @@ function App() {
                   </RequireAuth>
                 } />
 
-
-                <Route path={"/party/:partyId/"} element={
-                  <RequireAuth loginPath={'/login'}>
-                    {/* < PartyDetail/> */}
-                  </RequireAuth>
-                } />
 
                 <Route path={"/party/:partyId/check/"} element={
                   <RequireAuth loginPath={'/login'}>

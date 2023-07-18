@@ -1,23 +1,35 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useParams } from 'react-router-dom';
+// import axios from 'axios';
 
-const PartyDetails = ({ match }) => {
+const PartyDetails = () => {
+  const { partyId } = useParams();
+  console.log(partyId)
+
   const [party, setParty] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchParty = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3000/Parties/${match.params.id}`);
-        setParty(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.log(error);
-      }
-    };
+    // const fetchParty = async () => {
+    //   try {
+    //     const response = await axios.get(`http://localhost:5000/parties/${partyId}`);
+    //     setParty(response.data);
+    //     setLoading(false);
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // };
 
-    fetchParty();
-  }, [match.params.id]);
+    // fetchParty();
+
+    const MACK_DATA = {
+      id: 1,
+      name: 'Party 1',
+      description: 'This is the first party',
+    }
+    setParty(MACK_DATA);
+    
+  }, []);
 
   if (loading) {
     return <div>Loading...</div>;

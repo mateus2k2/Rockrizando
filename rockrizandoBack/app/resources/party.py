@@ -123,8 +123,31 @@ class PartiesData(Resource):
 class PartyData(Resource):
 
     def get(self, partyID):
-        return 200
-    
+        party = PartyModel.find_by_id(partyID)
+        party_tickets = []
+        if party:
+            for ticket in party.tickets:
+                party_tickets.append({
+                    'id': ticket.id,
+                    'name': ticket.name,
+                    'price': ticket.price,
+                    'description': ticket.description
+                })
+
+            party_data = {
+                'id': party.id,
+                'name': party.name,
+                'description': party.description,
+                'party_date': party.party_date.isoformat(),
+                'location': party.location,
+                'party_picture': party.party_picture,
+                'tickets': party_tickets
+            }
+
+            return party_data, 200
+        else:
+            return {'message': 'Party not found'}, 404
+        
 class PartieBuy(Resource):
 
     @jwt_required()

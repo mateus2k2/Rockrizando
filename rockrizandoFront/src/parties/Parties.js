@@ -17,7 +17,7 @@ const Parties = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/parties');
+      const response = await axios.get('http://localhost:5000/parties');
       setData(response.data);
       setLoading(false);
     } catch (error) {
