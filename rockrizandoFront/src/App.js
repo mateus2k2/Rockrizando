@@ -15,6 +15,9 @@ import Login from './users/Login'
 import Register from './users/Register'
 import UserProfile from './users/UserProfile'
 import PartyDetails from './parties/PartyDetails'
+import UserParties from './parties/UserParties'
+import UserParty from './parties/UserParty'
+// import TicketSelection from './parties/TicketSelection';
 
 import Sidebar from './shared/Navegation/Sider'
 
@@ -66,7 +69,13 @@ function App() {
 
                 <Route path={'/user/:userid/parties/'} element={
                   <RequireAuth loginPath={'/login'}>
-                    {/* < PartyParties/> */}
+                    < UserParties/>
+                  </RequireAuth>
+                } />
+
+                <Route path={'/user/:userid/parties/:partyid'} element={
+                  <RequireAuth loginPath={'/login'}>
+                    < UserParty/>
                   </RequireAuth>
                 } />
 
@@ -92,7 +101,7 @@ function App() {
 
                 <Route path={"/party/:partyId/buy/"} element={
                   <RequireAuth loginPath={'/login'}>
-                    {/* < PartyBuy/> */}
+                    {/* < TicketSelection/> */}
                   </RequireAuth>
                 } />
 

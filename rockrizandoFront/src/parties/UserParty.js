@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-  import { useParams, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 
 
-const PartyDetails = () => {
-  // const { partyId } = useParams();
+const UserParty = () => {
+  const { userid, partyid } = useParams();
+  console.log(userid, partyid)
 
   const [party, setParty] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -117,7 +118,7 @@ const PartyDetails = () => {
   );
 };
 
-export default PartyDetails;
+export default UserParty;
 
 
 

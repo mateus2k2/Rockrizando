@@ -5,7 +5,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, JWTManager
 from app.models.party import PartyModel
 from app.models.user import UserModel
 from app.models.ticket import TicketModel
-from app.models.participants import ParticipantsModel
+from app.models.purchases import PurchasesModel
 # from app.util.logz import create_logger
 from sqlalchemy import func
 from app.config.db import db
@@ -220,34 +220,39 @@ class UserParty(Resource):
 class PartyBuy(Resource):
 
     parser = reqparse.RequestParser()
-    parser.add_argument('name', type=str, required=True, help='Party name is required')
-    parser.add_argument('amount_and_tickets', type=dict, required=True, help='Amount and tickets data is required', action="append")
+    parser.add_argument('userID', type=int, required=True, help='User ID is required')
+    parser.add_argument('partyName', type=str, required=True, help='Party name is required')
+    parser.add_argument('tickets', type=dict, required=True, help='Amount and tickets data is required', action="append")
 
     @jwt_required()
     def post(self, partyID):
         data = PartyBuy.parser.parse_args()
 
-        # Check if the party exists
+        user = UserModel.find_by_id(data['userID'])
+        if not user:
+            return {'message': 'User not found'}, 404
+
         party = PartyModel.find_by_id(partyID)
         if not party:
             return {'message': 'Party not found'}, 404
 
-        # Process participants data
-        participants_data = data['amount_and_tickets']
+        participants_data = data['tickets']
 
         participants_list = []
         for participant_data in participants_data:
             
-            ticket_type = participant_data.get('ticketType')
+            ticket_id = participant_data.get('ticketID')
             participant_name = participant_data.get('name')
             participant_email = participant_data.get('email')
 
-            # Perform any necessary validations on ticket_type, participant_name, participant_email
+            ticket = TicketModel.find_by_id(ticket_id)
+            if not ticket:
+                participants_list.append( {'message': f'Ticket with ID {ticket_id} not found'} )
 
-            # Create and save the participant
-            participant = ParticipantsModel(user_id=None, party_id=partyID, ticket_id=None)
-            participant.save_to_db()
+            else:
+                participant = PurchasesModel(user_id=data['userID'], party_id=partyID, ticket_id=ticket_id, name = participant_name, email = participant_email)
+                participant.save_to_db()
 
-            participants_list.append(participant.json())
+                participants_list.append(participant.json())
 
         return {'message': 'Purchase successful', 'participants': participants_list}, 201
