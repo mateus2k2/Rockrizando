@@ -17,7 +17,7 @@ import UserProfile from './users/UserProfile'
 import PartyDetails from './parties/PartyDetails'
 import UserParties from './parties/UserParties'
 import UserParty from './parties/UserParty'
-// import TicketSelection from './parties/TicketSelection';
+import TicketSelection from './parties/TicketSelection';
 
 import Sidebar from './shared/Navegation/Sider'
 
@@ -101,7 +101,7 @@ function App() {
 
                 <Route path={"/party/:partyId/buy/"} element={
                   <RequireAuth loginPath={'/login'}>
-                    {/* < TicketSelection/> */}
+                    < TicketSelection/>
                   </RequireAuth>
                 } />
 

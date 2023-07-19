@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
 const TicketSelection = () => {
   const { partyId } = useParams();
-  const history = useHistory();
+  // const history = useHistory();
 
   const [ticketType, setTicketType] = useState('');
   const [quantity, setQuantity] = useState(0);
@@ -34,7 +34,7 @@ const TicketSelection = () => {
 
       setLoading(false);
       setPurchaseComplete(true);
-      history.push('/success');
+      // history.push('/success');
 
     } catch (error) {
       console.error('Error purchasing ticket:', error);
