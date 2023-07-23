@@ -1,73 +1,277 @@
 import React, { useState } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useAuthHeader } from 'react-auth-kit';
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Select } from 'antd';
 import axios from 'axios';
+
+const { Option } = Select;
+
+const TicketForm = ({ ticketForm, index, onTicketFormChange, onRemoveTicketForm }) => {
+  return (
+    <div style={{ backgroundColor: '#f0f0f0', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
+      <Form layout="vertical">
+        <Form.Item label="Name">
+          <Input
+            value={ticketForm.name}
+            onChange={e => onTicketFormChange(index, 'name', e.target.value)}
+          />
+        </Form.Item>
+
+        <Form.Item label="Email">
+          <Input
+            value={ticketForm.email}
+            onChange={e => onTicketFormChange(index, 'email', e.target.value)}
+          />
+        </Form.Item>
+
+        <Form.Item label="Ticket Type">
+          <Select
+            value={ticketForm.ticketType}
+            onChange={value => onTicketFormChange(index, 'ticketType', value)}
+          >
+            <Option value="standard">Standard</Option>
+            <Option value="vip">VIP</Option>
+            <Option value="premium">Premium</Option>
+          </Select>
+        </Form.Item>
+      </Form>
+
+      {index > 0 && (
+        <Button
+          type="danger"
+          icon={<MinusCircleOutlined />}
+          onClick={() => onRemoveTicketForm(index)}
+        >
+          Remove
+        </Button>
+      )}
+    </div>
+  );
+};
+
 
 const TicketSelection = () => {
   const { partyId } = useParams();
-  const history = useHistory();
+  const history = useNavigate();
+  const authHeader = useAuthHeader();
 
-  const [ticketType, setTicketType] = useState('');
-  const [quantity, setQuantity] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [purchaseComplete, setPurchaseComplete] = useState(false);
+  const [ticketForms, setTicketForms] = useState([{ name: '', email: '', ticketType: '' }]);
 
-  const handleTicketTypeChange = event => {
-    setTicketType(event.target.value);
+  const handleTicketFormChange = (index, field, value) => {
+    const newTicketForms = [...ticketForms];
+    newTicketForms[index][field] = value;
+    setTicketForms(newTicketForms);
   };
 
-  const handleQuantityChange = event => {
-    setQuantity(Number(event.target.value));
+  const addTicketForm = () => {
+    setTicketForms([...ticketForms, { name: '', email: '', ticketType: '' }]);
   };
 
-  const handlePurchase = async () => {
-    setLoading(true);
+  const removeTicketForm = index => {
+    const newTicketForms = [...ticketForms];
+    newTicketForms.splice(index, 1);
+    setTicketForms(newTicketForms);
+  };
+
+  const handleSubmit = async () => {
+    // Aqui você pode enviar a requisição POST para salvar as compras no banco de dados
+    // Pode usar a biblioteca axios ou outra de sua preferência
+
+    const purchases = ticketForms.map(ticketForm => ({
+      partyId: partyId,
+      name: ticketForm.name,
+      email: ticketForm.email,
+      ticketType: ticketForm.ticketType,
+    }));
 
     try {
+      // Envia a requisição para salvar as compras no banco de dados
+      await axios.post('http://localhost:5000/purchases', purchases, {
+        headers: {
+          Authorization: authHeader(),
+        },
+      });
 
-      const purchaseData = {
-        partyId: partyId,
-        ticketType: ticketType,
-        quantity: quantity,
-      };
-
-      await axios.post('http://localhost:5000/purchase', purchaseData);
-
-      setLoading(false);
-      setPurchaseComplete(true);
+      // Redireciona para uma página de sucesso ou qualquer outra página desejada
       history.push('/success');
 
     } catch (error) {
-      console.error('Error purchasing ticket:', error);
-      setLoading(false);
-
+      console.error('Error purchasing tickets:', error);
+      // Lida com o erro de forma adequada, exibindo uma mensagem de erro ou realizando outra ação necessária
     }
   };
 
   return (
-    <div>
-      <h1>Ticket Selection</h1>
-      <div>
-        <label>
-          Ticket Type:
-          <select value={ticketType} onChange={handleTicketTypeChange}>
-            <option value="">Select a ticket type</option>
-            <option value="standard">Standard</option>
-            <option value="vip">VIP</option>
-            <option value="premium">Premium</option>
-          </select>
-        </label>
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '-100vh',
+      }}
+    >
+      <div style={{ width: '800px' }}>
+        <h1 style={{ textAlign: 'center' }}>Ticket Selection</h1>
+        {ticketForms.map((ticketForm, index) => (
+          <TicketForm
+            key={index}
+            ticketForm={ticketForm}
+            index={index}
+            onTicketFormChange={handleTicketFormChange}
+            onRemoveTicketForm={removeTicketForm}
+          />
+        ))}
+
+        <Button type="primary" icon={<PlusOutlined />} onClick={addTicketForm}>
+          Add Ticket
+        </Button>
+
+        <Button type="primary" onClick={handleSubmit}>
+          Buy Tickets
+        </Button>
       </div>
-      <div>
-        <label>
-          Quantity:
-          <input type="number" value={quantity} onChange={handleQuantityChange} />
-        </label>
-      </div>
-      <button onClick={handlePurchase} disabled={!ticketType || quantity <= 0 || loading}>
-        {loading ? 'Processing...' : 'Buy Tickets'}
-      </button>
-      {purchaseComplete && <p>Purchase complete!</p>}
     </div>
   );
 };
+
 export default TicketSelection;
+//Versão Back end
+// import React, { useState, useEffect } from 'react';
+// import { useParams, useNavigate } from 'react-router-dom';
+// import { useAuthHeader } from 'react-auth-kit';
+// import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+// import { Form, Input, Button, Select } from 'antd';
+// import axios from 'axios';
+
+// const { Option } = Select;
+
+// const TicketForm = ({ ticketForm, index, onTicketFormChange, onRemoveTicketForm, ticketOptions }) => {
+//   return (
+//     <div style={{ backgroundColor: '#f0f0f0', padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
+//       <Form layout="vertical">
+//         <Form.Item label="Name">
+//           <Input
+//             value={ticketForm.name}
+//             onChange={(e) => onTicketFormChange(index, 'name', e.target.value)}
+//           />
+//         </Form.Item>
+
+//         <Form.Item label="Email">
+//           <Input
+//             value={ticketForm.email}
+//             onChange={(e) => onTicketFormChange(index, 'email', e.target.value)}
+//           />
+//         </Form.Item>
+
+//         <Form.Item label="Ticket Type">
+//           <Select
+//             value={ticketForm.ticketType}
+//             onChange={(value) => onTicketFormChange(index, 'ticketType', value)}
+//           >
+//             {ticketOptions.map((option) => (
+//               <Option key={option.name} value={option.name}>
+//                 {option.name} - ${option.price}
+//               </Option>
+//             ))}
+//           </Select>
+//         </Form.Item>
+//       </Form>
+
+//       {index > 0 && (
+//         <Button type="danger" icon={<MinusCircleOutlined />} onClick={() => onRemoveTicketForm(index)}>
+//           Remove
+//         </Button>
+//       )}
+//     </div>
+//   );
+// };
+
+// const TicketSelection = () => {
+//   const { partyId } = useParams();
+//   const history = useNavigate();
+//   const authHeader = useAuthHeader();
+
+//   const [ticketForms, setTicketForms] = useState([{ name: '', email: '', ticketType: '' }]);
+//   const [partyDetails, setPartyDetails] = useState(null);
+//   const [ticketOptions, setTicketOptions] = useState([]);
+
+//   useEffect(() => {
+//     const fetchPartyDetails = async () => {
+//       try {
+//         const response = await axios.get(`http://localhost:5000/parties/${partyId}`);
+//         setPartyDetails(response.data);
+//         setTicketOptions(response.data.ticketTypes);
+//       } catch (error) {
+//         console.log(error);
+//       }
+//     };
+
+//     fetchPartyDetails();
+//   }, [partyId]);
+
+//   const handleTicketFormChange = (index, field, value) => {
+//     const newTicketForms = [...ticketForms];
+//     newTicketForms[index][field] = value;
+//     setTicketForms(newTicketForms);
+//   };
+
+//   const addTicketForm = () => {
+//     setTicketForms([...ticketForms, { name: '', email: '', ticketType: '' }]);
+//   };
+
+//   const removeTicketForm = (index) => {
+//     const newTicketForms = [...ticketForms];
+//     newTicketForms.splice(index, 1);
+//     setTicketForms(newTicketForms);
+//   };
+
+//   const handleSubmit = async () => {
+//     const purchases = ticketForms.map((ticketForm) => ({
+//       partyId: partyId,
+//       name: ticketForm.name,
+//       email: ticketForm.email,
+//       ticketType: ticketForm.ticketType,
+//     }));
+
+//     try {
+//       await axios.post('http://localhost:5000/purchases', purchases, {
+//         headers: {
+//           Authorization: authHeader(),
+//         },
+//       });
+
+//       history.push('/success');
+//     } catch (error) {
+//       console.error('Error purchasing tickets:', error);
+//     }
+//   };
+
+//   return (
+//     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '-100vh' }}>
+//       <div style={{ width: '800px' }}>
+//         <h1 style={{ textAlign: 'center' }}>Ticket Selection</h1>
+//         {ticketForms.map((ticketForm, index) => (
+//           <TicketForm
+//             key={index}
+//             ticketForm={ticketForm}
+//             index={index}
+//             onTicketFormChange={handleTicketFormChange}
+//             onRemoveTicketForm={removeTicketForm}
+//             ticketOptions={ticketOptions}
+//           />
+//         ))}
+
+//         <Button type="primary" icon={<PlusOutlined />} onClick={addTicketForm}>
+//           Add Ticket
+//         </Button>
+
+//         <Button type="primary" onClick={handleSubmit}>
+//           Buy Tickets
+//         </Button>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default TicketSelection;
