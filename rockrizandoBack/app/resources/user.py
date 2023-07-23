@@ -128,6 +128,7 @@ class UpdateUserData(Resource):
         username = data['username']
         profile_picture = None
         
+        print(profile_picture)
         user = UserModel.find_by_id(userID)
         if not user:
             return {'message': 'User not found'}, 404

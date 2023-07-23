@@ -73,7 +73,7 @@ function App() {
                   </RequireAuth>
                 } />
 
-                <Route path={'/user/:userid/parties/:partyid'} element={
+                <Route path={'/user/:userid/parties/:partyId'} element={
                   <RequireAuth loginPath={'/login'}>
                     < UserParty/>
                   </RequireAuth>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './UserProfile.css';
 import { useAuthUser, useAuthHeader } from 'react-auth-kit';
 import { PlusOutlined } from '@ant-design/icons'
@@ -13,6 +14,7 @@ const UserProfile = () => {
   const [password, setPassword] = useState('');
   const auth = useAuthUser();
   const authHeader = useAuthHeader();
+  const navigate = useNavigate();
 
   const normFile = (e) => {
     if (Array.isArray(e)) {
@@ -48,9 +50,10 @@ const UserProfile = () => {
           Authorization: authHeader(),
         },
       });
-      const userData = response.data;
-      setName(userData.username);
-      setEmail(userData.email);
+      console.log(response.data)
+      // const userData = response.data;
+      // setName(userData.username);
+      // setEmail(userData.email);
     } catch (error) {
       console.log(error);
     }
@@ -60,9 +63,39 @@ const UserProfile = () => {
     setIsEditMode(true);
   };
 
-  const handleSaveClick = () => {
+  const handleSaveClick = async () => {
     setIsEditMode(false);
-    // Logic to save the changes made by the user
+    console.log(fileList[0].originFileObj);
+    console.log(name)
+    console.log(email)
+    console.log(password)
+    console.log(auth().user)
+
+    const formData = new FormData();
+    formData.append('profile_picture', fileList[0].originFileObj);
+    formData.append('username', name);
+    formData.append('email', email);
+    formData.append('password', password);
+
+    try {
+      // setLoading(true); 
+
+      await axios.patch(`http://localhost:5000/user/${auth().user}/update`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: authHeader(),
+        },
+      });
+
+      message.success('User Updated! Redirecting...');
+      navigate('/');
+    } 
+    
+    catch (error) {
+      // setLoading(false);
+      message.error('Failed to User Update.');
+      return false;
+    }
   };
 
   const handleCancelClick = () => {

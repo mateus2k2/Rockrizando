@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Spin, Input } from 'antd';
 import { Link, useParams } from 'react-router-dom';
+import { useAuthHeader, useAuthUser } from 'react-auth-kit';
 import antIcon from '../shared/Spin.js';
 import axios from 'axios';
 
@@ -10,16 +11,23 @@ const UserParties = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const auth = useAuthUser();
+  const authHeader = useAuthHeader();
 
   const { userid } = useParams();
 
   useEffect(() => {
     fetchData();
-  }, []);
+  });
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/parties');
+      // const response = await axios.get('http://localhost:5000/parties');
+      const response = await axios.get(`http://localhost:5000/user/${auth().user}/parties/`,{
+                headers: {
+                    Authorization: authHeader(),
+                },
+            });
       setData(response.data);
       setLoading(false);
     } catch (error) {

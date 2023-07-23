@@ -12,7 +12,7 @@ class UserFile(Resource):
             return {'message': 'File not found.'}, 404
 
 
-PARTY_UPLOAD_DIRECTORY = "./../app/files/user"
+PARTY_UPLOAD_DIRECTORY = "./../app/files/party"
 
 class PartyFile(Resource):
     def get(self, filename):
