@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+  import { useParams, Link } from 'react-router-dom';
 
 
 const PartyDetails = () => {
-  const { partyId } = useParams();
+  // const { partyId } = useParams();
 
   const [party, setParty] = useState(null);
   const [loading, setLoading] = useState(true);
