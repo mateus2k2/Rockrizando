@@ -191,6 +191,7 @@ const TicketSelection = () => {
   const { partyId } = useParams();
   const history = useNavigate();
   const authHeader = useAuthHeader();
+  const { authUser } = useAuthHeader();
 
   const [ticketForms, setTicketForms] = useState([{ name: '', email: '', ticketType: '' }]);
   // eslint-disable-next-line
@@ -228,15 +229,20 @@ const TicketSelection = () => {
   };
 
   const handleSubmit = async () => {
-    // const purchases = ticketForms.map((ticketForm) => ({
-    //   partyId: partyId,
-    //   name: ticketForm.name,
-    //   email: ticketForm.email,
-    //   ticketType: ticketForm.ticketType,
-    // }));
-
-    // console.log(purchases)
-    // console.log(ticketForms)
+    // const purchases = {
+    //   userID: authUser.userID, 
+    //   partyName: partyId,
+  //   tickets: ticketForms.map((ticketForm) => {
+  //     const ticketOption = ticketOptions.find(
+  //       (option) => option.name === ticketForm.ticketType
+  //     );
+  //     return {
+  //       ticketID: ticketOption ? ticketOption.ticketID : null,
+  //       name: ticketForm.name,
+  //       email: ticketForm.email,
+  //     };
+  //   }),
+  // };
     const purchases = {
       "userID": 3,
       "partyName": "festa1",
