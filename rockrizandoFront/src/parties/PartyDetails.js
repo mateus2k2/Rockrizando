@@ -121,7 +121,7 @@ const PartyDetails = () => {
     const fetchParty = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/party/${partyId}`);
-        console.log(response.data);
+        // console.log(response.data);
         setParty(response.data);
         setLoading(false);
       } catch (error) {

@@ -194,15 +194,12 @@ const TicketSelection = () => {
   const auth = useAuthUser();
 
   const [ticketForms, setTicketForms] = useState([{ name: '', email: '', ticketType: '' }]);
-  // eslint-disable-next-line
-  const [partyDetails, setPartyDetails] = useState(null);
   const [ticketOptions, setTicketOptions] = useState([]);
 
   useEffect(() => {
     const fetchPartyDetails = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/party/${partyId}`);
-        setPartyDetails(response.data);
         setTicketOptions(response.data.tickets);
       } catch (error) {
         console.log(error);
@@ -237,37 +234,14 @@ const TicketSelection = () => {
           (option) => option.name === ticketForm.ticketType
         );
         return {
-          ticketID: ticketOption ? ticketOption.ticketID : null,
+          ticketID: ticketOption ? ticketOption.id : null,
           name: ticketForm.name,
           email: ticketForm.email,
         };
       }),
     };
 
-    console.log(purchases)
-    // const purchases = {
-    //   "userID": 3,
-    //   "partyName": "festa1",
-    //   "tickets": 
-    //   [
-    //     {
-    //       "ticketID": 2,
-    //       "name": "nome1",
-    //       "email": "email"
-    //     },
-    //     {
-    //       "ticketID": 2,	
-    //       "name": "nome1",
-    //       "email": "email"
-    //     },
-    //     {
-    //       "ticketID": 20,	
-    //       "name": "nome1",
-    //       "email": "email"
-    //     }
-
-    //   ]
-    // }
+    // console.log(purchases)
 
     try {
       await axios.post(`http://localhost:5000/party/${partyId}/buy`, purchases, {
