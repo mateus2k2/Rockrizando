@@ -221,7 +221,7 @@ class PartyBuy(Resource):
 
     parser = reqparse.RequestParser()
     parser.add_argument('userID', type=int, required=True, help='User ID is required')
-    parser.add_argument('partyName', type=str, required=True, help='Party name is required')
+    parser.add_argument('partyID', type=str, required=True, help='Party name is required')
     parser.add_argument('tickets', type=dict, required=True, help='Amount and tickets data is required', action="append")
 
     @jwt_required()

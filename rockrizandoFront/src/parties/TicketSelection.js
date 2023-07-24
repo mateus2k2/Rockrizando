@@ -139,7 +139,7 @@
 //Versão Back end
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuthHeader } from 'react-auth-kit';
+import { useAuthHeader, useAuthUser } from 'react-auth-kit';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Form, Input, Button, Select } from 'antd';
 import axios from 'axios';
@@ -191,7 +191,7 @@ const TicketSelection = () => {
   const { partyId } = useParams();
   const history = useNavigate();
   const authHeader = useAuthHeader();
-  const { authUser } = useAuthHeader();
+  const auth = useAuthUser();
 
   const [ticketForms, setTicketForms] = useState([{ name: '', email: '', ticketType: '' }]);
   // eslint-disable-next-line
@@ -229,43 +229,45 @@ const TicketSelection = () => {
   };
 
   const handleSubmit = async () => {
-    // const purchases = {
-    //   userID: authUser.userID, 
-    //   partyName: partyId,
-  //   tickets: ticketForms.map((ticketForm) => {
-  //     const ticketOption = ticketOptions.find(
-  //       (option) => option.name === ticketForm.ticketType
-  //     );
-  //     return {
-  //       ticketID: ticketOption ? ticketOption.ticketID : null,
-  //       name: ticketForm.name,
-  //       email: ticketForm.email,
-  //     };
-  //   }),
-  // };
     const purchases = {
-      "userID": 3,
-      "partyName": "festa1",
-      "tickets": 
-      [
-        {
-          "ticketID": 2,
-          "name": "nome1",
-          "email": "email"
-        },
-        {
-          "ticketID": 2,	
-          "name": "nome1",
-          "email": "email"
-        },
-        {
-          "ticketID": 20,	
-          "name": "nome1",
-          "email": "email"
-        }
-        
-      ]
-    }
+      userID: auth().user,
+      partyID: partyId,
+      tickets: ticketForms.map((ticketForm) => {
+        const ticketOption = ticketOptions.find(
+          (option) => option.name === ticketForm.ticketType
+        );
+        return {
+          ticketID: ticketOption ? ticketOption.ticketID : null,
+          name: ticketForm.name,
+          email: ticketForm.email,
+        };
+      }),
+    };
+
+    console.log(purchases)
+    // const purchases = {
+    //   "userID": 3,
+    //   "partyName": "festa1",
+    //   "tickets": 
+    //   [
+    //     {
+    //       "ticketID": 2,
+    //       "name": "nome1",
+    //       "email": "email"
+    //     },
+    //     {
+    //       "ticketID": 2,	
+    //       "name": "nome1",
+    //       "email": "email"
+    //     },
+    //     {
+    //       "ticketID": 20,	
+    //       "name": "nome1",
+    //       "email": "email"
+    //     }
+
+    //   ]
+    // }
 
     try {
       await axios.post(`http://localhost:5000/party/${partyId}/buy`, purchases, {
