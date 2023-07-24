@@ -1,3 +1,4 @@
+from itertools import count
 from flask import jsonify, request
 from app.util.validators import string_to_date
 from flask_restful import Resource, reqparse
@@ -189,33 +190,53 @@ class UserParty(Resource):
     @jwt_required()
     def get(self, userID, partyID):
         jwt = get_jwt_identity()
-        
-        if(jwt['user'] != userID):
+
+        if jwt['user'] != userID:
             return {'message': 'Unauthorized'}, 401
-        
-        party = PartyModel.query.filter_by(creator_id=jwt['user'], id=partyID).first()
-        party_data = []
-        
-        party_tickets = []
-        for ticket in party.tickets:
-            party_tickets.append({
-                'id': ticket.id,
-                'name': ticket.name,
-                'price': ticket.price,
-                'description': ticket.description
-            })
 
-        party_data.append({
-            'id': party.id,
-            'name': party.name,
-            'description': party.description,
-            'party_date': party.party_date.isoformat(),
-            'location': party.location,
-            'party_picture': party.party_picture,
-            'tickets': party_tickets
-        })
+        # Get participants of the party for the given partyID
+        participants = PurchasesModel.query.filter_by(party_id=partyID).all() 
 
-        return party_data, 200      
+        # Return amount of tickets sold
+        total_tickets_sold = len(participants)
+
+        # Return amount of tickets sold per ticket type and total money made per ticket type
+        ticket_type_count = []
+        ticket_type_amounts = {}
+
+        for participant in participants:
+            ticket_id = participant.ticket_id
+            ticket = TicketModel.find_by_id(ticket_id)
+            if ticket:
+                ticket_id = ticket.id
+                ticket_type_amounts[ticket_id] = ticket_type_amounts.get(ticket_id, 0) + 1
+
+        for ticket_id, ticket_count in ticket_type_amounts.items():
+            ticket = TicketModel.query.filter_by(id=ticket_id).first()
+            if ticket:
+                ticket_price = ticket.price
+                total_money_made = ticket_count * ticket_price
+                ticket_type_count.append({
+                    'ticket_id': ticket_id,
+                    'tickets_sold': ticket_count,
+                    'money_made': total_money_made
+                })
+
+        # Return amount of money made from tickets sold
+        total_money_made = 0
+        for participant in participants:
+            ticket_id = participant.ticket_id
+            ticket = TicketModel.find_by_id(ticket_id)
+            if ticket:
+                total_money_made += ticket.price
+
+
+        return {
+            'total_tickets_sold': total_tickets_sold,
+            'ticket_type_count': ticket_type_count,
+            'total_money_made': total_money_made
+        }, 200
+         
 
 class PartyBuy(Resource):
 
