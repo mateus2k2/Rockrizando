@@ -9,8 +9,8 @@ import { Form, Input, Button, Upload, message } from 'antd';
 const UserProfile = () => {
   const [fileList, setFileList] = useState([]);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState('ErroName');
+  const [email, setEmail] = useState('ErrorEmail');
   const [password, setPassword] = useState('');
   const auth = useAuthUser();
   const authHeader = useAuthHeader();
@@ -41,7 +41,8 @@ const UserProfile = () => {
   useEffect(() => {
     // Fetch initial user information from the backend
     fetchUserInfo();
-  });
+  // eslint-disable-next-line
+  }, []);
 
   const fetchUserInfo = async () => {
     try {
@@ -122,18 +123,18 @@ const UserProfile = () => {
           {/* Render the profile picture here */}
           <img src={`http://localhost:5000/files/user/profile_picture_${auth().user}.jpg`} alt="Profile" />
         </div>
-        <h1>{/* {name} */}</h1>
+        <h1>{name}</h1>
       </div>
       {isEditMode ? (
         <Form>
           <Form.Item label="Name">
-            <Input /* value={name} */ onChange={handleNameChange} />
+            <Input value={name} onChange={handleNameChange} />
           </Form.Item>
           <Form.Item label="Email">
-            <Input type="email" /* value={email} */ onChange={handleEmailChange} />
+            <Input type="email" value={email} onChange={handleEmailChange} />
           </Form.Item>
           <Form.Item label="Password">
-            <Input.Password /* value={password} */ onChange={handlePasswordChange} />
+            <Input.Password value={password} onChange={handlePasswordChange} />
           </Form.Item>
 
           <Form.Item name="upload" label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
