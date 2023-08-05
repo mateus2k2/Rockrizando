@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useIsAuthenticated } from 'react-auth-kit';
 import axios from 'axios';
 
 const PartyDetails = () => {
@@ -7,6 +8,8 @@ const PartyDetails = () => {
 
   const [party, setParty] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {
     const fetchParty = async () => {
@@ -83,7 +86,7 @@ const PartyDetails = () => {
             </div>
           ))}
           <Link to={`http://localhost:3000/party/${partyId}/buy/`}>
-            <button
+            {isAuthenticated() && <button
               style={{
                 marginTop: '20px',
                 padding: '10px 20px',
@@ -97,7 +100,7 @@ const PartyDetails = () => {
               }}
             >
               Buy Ticket
-            </button>
+            </button>}
           </Link>
         </div>
       </div>

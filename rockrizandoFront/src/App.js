@@ -9,15 +9,23 @@ import {
 import { AuthProvider, RequireAuth } from 'react-auth-kit'
 import { Layout, theme } from 'antd';
 
-import Parties from './parties/Parties'
-import NewParty from './parties/NewParty'
 import Login from './users/Login'
 import Register from './users/Register'
 import UserProfile from './users/UserProfile'
+import Logout from './users/Logout';
+
+import Parties from './parties/Parties'
+import NewParty from './parties/NewParty'
 import PartyDetails from './parties/PartyDetails'
 import UserParties from './parties/UserParties'
 import UserParty from './parties/UserParty'
-import TicketSelection from './parties/TicketSelection';
+import PartyPurchases from './parties/PartyPurchases';
+import PartyUpdate from './parties/PartyUpdate';
+
+import TicketSelection from './ticket/TicketSelection';
+import UserTickts from './ticket/UserTickets';
+import UserTickt from './ticket/UserTicket';
+import TicketDetail from './ticket/TicketDetail';
 
 import Sidebar from './shared/Navegation/Sider'
 
@@ -61,11 +69,39 @@ function App() {
                   </RequireAuth>
                 } />
 
+                <Route path={'/logout/'} element={
+                  <RequireAuth loginPath={'/login'}>
+                    <Logout/>
+                  </RequireAuth>
+                } />  
+
+                {/* mostrar listas com as festas compradas pelo usuario. Linkar cada festa para a lista de tickets de cada usuario */}
                 <Route path={'/user/:userid/purchases/'} element={
                   <RequireAuth loginPath={'/login'}>
-                    {/* < PartyPurchases/> */}
+                    < PartyPurchases/>
+                  </RequireAuth>
+                } /> 
+
+                {/* mostrar listas com os tickets de uma certa festa de um certo usuário */}
+                <Route path={'/user/:userid/purchases/:party'} element={
+                  <RequireAuth loginPath={'/login'}>
+                    < UserTickts/>
+                  </RequireAuth>
+                } /> 
+
+                {/* mostrar detalhes de um certo ingresso de uma certa festa de um certo cara*/}
+                <Route path={'/user/:userid/ticket/:ticketid'} element={
+                  <RequireAuth loginPath={'/login'}>
+                    < UserTickt/>
                   </RequireAuth>
                 } />           
+
+                {/* mostra detalhe de um certo ingresso */}
+                <Route path={'/ticket/:ticketUUID'} element={
+                  <RequireAuth loginPath={'/login'}>
+                    < TicketDetail/>
+                  </RequireAuth>
+                } />
 
                 <Route path={'/user/:userid/parties/'} element={
                   <RequireAuth loginPath={'/login'}>
@@ -87,15 +123,9 @@ function App() {
                 } />
 
 
-                <Route path={"/party/:partyId/check/"} element={
-                  <RequireAuth loginPath={'/login'}>
-                    {/* < PartyCheck/> */}
-                  </RequireAuth>
-                } />
-
                 <Route path={"/party/:partyId/update/"} element={
                   <RequireAuth loginPath={'/login'}>
-                    {/* < PartyUpdate/> */}
+                    < PartyUpdate/>
                   </RequireAuth>
                 } />
 

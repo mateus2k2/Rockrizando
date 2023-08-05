@@ -47,12 +47,18 @@ api.add_resource(UpdateUserData, '/user/<int:userID>/update', methods=['PATCH'])
 
 api.add_resource(PartiesData, '/parties/', methods=['GET'])
 api.add_resource(PartyData, '/party/<int:partyID>/', methods=['GET'])
-api.add_resource(PartyBuy, '/party/<int:partyID>/buy', methods=['POST']) # ----------------------
+api.add_resource(PartyBuy, '/party/<int:partyID>/buy', methods=['POST']) # Fazer uuid e Gerar QR Code 
 
-api.add_resource(UserParties, '/user/<int:userID>/parties/', methods=['GET']) # ----------------------
-api.add_resource(UserParty, '/user/<int:userID>/parties/<int:partyID>', methods=['GET']) # ----------------------
+api.add_resource(UserParties, '/user/<int:userID>/parties/', methods=['GET']) 
+api.add_resource(UserParty, '/user/<int:userID>/parties/<int:partyID>', methods=['GET']) 
 
-
+# /files/ticket/<int:ticketID>                Retorna imagem do QR Code de uma festa pelo uuid
+# /ticket/<string:uuid>                       Retorna detalhes do ticket e do usuário
+# /user/:userid/purchases/                    Pegar lista festas compradas por um usuário
+# /user/:userid/purchases/:party:id           Pegar lista Ingressos de uma festa de um usuário
+# /user/:userid/ticket/:ticketid              Pegas detalhes de um ingresso específico de um usuário
+# /user/:userid/party/<int:partyID>/delete/   Deletar festa
+# /user/:userid/party/<int:partyID>/update/   Deletar festa
 
 
 if __name__ == '__main__':
