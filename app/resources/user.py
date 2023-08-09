@@ -184,5 +184,7 @@ class UserTicketData(Resource):
                 'description': ticket.description,
                 'price': ticket.price,
                 'party_id': ticket.party_id,
-            }
+            },
+            'PurchaseName': purchase.name,
+            'PurchaseEmail': purchase.email            
         }, 200
