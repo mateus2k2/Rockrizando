@@ -8,7 +8,7 @@ import json
 import os
 
 from app.resources.party import NewPartyPicture, NewPartyData, PartiesData, PartyBuy, PartyData, UserParties, UserParty
-from app.resources.user import UserRegister, UserLogin, GetUserData, UpdateUserData, UserTicketData
+from app.resources.user import UserRegister, UserLogin, GetUserData, UpdateUserData, UserTicketData, UserPurchases
 from app.resources.files import UserFile, PartyFile, TicketFile
 from app.config.config import postgresqlConfig
 
@@ -58,6 +58,7 @@ api.add_resource(UserParty, '/user/<int:userID>/parties/<int:partyID>', methods=
 api.add_resource(UserTicketData, '/ticket/<string:uuid>', methods=['GET'])
 
 # /user/:userid/purchases/                    Pegar lista festas compradas por um usuário
+api.add_resource(UserPurchases, '/user/:userid/purchases/', methods=['GET'])
 
 # /user/:userid/purchases/:party:id           Pegar lista Ingressos de uma festa de um usuário
 api.add_resource(UserTicketData, '/user/:userid/ticket/:ticketid', methods=['GET'])

@@ -188,3 +188,12 @@ class UserTicketData(Resource):
             'PurchaseName': purchase.name,
             'PurchaseEmail': purchase.email            
         }, 200
+
+class UserPurchases(Resource):
+    def get(self, userID):
+        purchases = PurchasesModel.find_by_user_id(userID)
+        if not purchases:
+            return {'message': 'User not found'}, 404
+        
+        purchases = list(map(lambda x: x.json(), purchases))
+        return {'purchases': purchases}, 200
