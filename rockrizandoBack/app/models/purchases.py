@@ -41,3 +41,7 @@ class PurchasesModel(db.Model):
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()
+
+    @classmethod
+    def find_by_uuid(cls, uuid):
+        return cls.query.filter_by(uuid=uuid).first()

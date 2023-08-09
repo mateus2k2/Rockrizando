@@ -3,6 +3,9 @@ from flask import jsonify, request
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from flask_jwt_extended import current_user
 from app.models.user import UserModel
+from app.models.party import PartyModel
+from app.models.ticket import TicketModel
+from app.models.purchases import PurchasesModel
 from app.config.db import db
 from datetime import datetime
 from werkzeug.utils import secure_filename
@@ -155,3 +158,37 @@ class UpdateUserData(Resource):
         user.save_to_db()
         
         return {'message': 'user has been updated successfully.'}, 201
+
+class UserTicketData(Resource):
+    @jwt_required()
+    def get(self, uuid):
+        jwtID = get_jwt_identity()
+        
+        if(jwtID['user'] != userID):
+            return {'message': 'Unauthorized'}, 401
+        
+        purchase = PurchaseModel.find_by_uuid(uuid)
+        if not purchase:
+            return {'message': 'Purchase not found'}, 404
+        
+        user = UserModel.find_by_id(purchase.user_id)
+        if not user:
+            return {'message': 'User not found'}, 404
+        
+        ticket = TicketModel.find_by_id(purchase.ticket_id)
+        if not ticket:
+            return {'message': 'Ticket not found'}, 404
+
+        return {
+            'id': user.id,
+            'email': user.email,
+            'username': user.username,
+            'birth_date': user.birth_date.strftime('%d-%m-%Y'),
+            'ticket': {
+                'id': ticket.id,
+                'name': ticket.name,
+                'description': ticket.description,
+                'price': ticket.price,
+                'party_id': ticket.party_id,
+            }
+        }, 200

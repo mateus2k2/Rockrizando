@@ -95,8 +95,6 @@ class NewPartyPicture(Resource):
 
         return {'message': 'party has been created successfully.'}, 201
 
-
-
 class PartiesData(Resource):
 
     def get(self):
@@ -238,8 +236,7 @@ class UserParty(Resource):
             'total_tickets_sold': total_tickets_sold,
             'ticket_type_count': ticket_type_count,
             'total_money_made': total_money_made
-        }, 200
-         
+        }, 200        
 
 class PartyBuy(Resource):
 

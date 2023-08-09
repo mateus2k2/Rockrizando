@@ -1,4 +1,5 @@
 import os
+import qrcode
 from flask import Flask, send_from_directory
 from flask_restful import Api, Resource
 
@@ -18,5 +19,12 @@ class PartyFile(Resource):
     def get(self, filename):
         try:
             return send_from_directory(PARTY_UPLOAD_DIRECTORY, filename)
+        except FileNotFoundError:
+            return {'message': 'File not found.'}, 404
+
+class PartyTicket(Resource):
+    def get(self, uuid):
+        try:
+            return send_from_directory('app/files/ticket', uuid + '.png')
         except FileNotFoundError:
             return {'message': 'File not found.'}, 404
