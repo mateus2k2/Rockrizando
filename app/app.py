@@ -8,8 +8,13 @@ import json
 import os
 
 from app.resources.party import NewPartyPicture, NewPartyData, PartiesData, PartyBuy, PartyData, UserParties, UserParty
+<<<<<<< HEAD:app/app.py
 from app.resources.user import UserRegister, UserLogin, GetUserData, UpdateUserData
 from app.resources.files import UserFile, PartyFile, TicketFile
+=======
+from app.resources.user import UserRegister, UserLogin, GetUserData, UpdateUserData, UserTicketData
+from app.resources.files import UserFile, PartyFile, UserTicket
+>>>>>>> e17cf6ed45b1b01c99435fc9e090ae6e83a964e4:rockrizandoBack/app/app.py
 from app.config.config import postgresqlConfig
 
 app = Flask(__name__)
@@ -53,13 +58,15 @@ api.add_resource(PartyBuy, '/party/<int:partyID>/buy', methods=['POST']) # Fazer
 api.add_resource(UserParties, '/user/<int:userID>/parties/', methods=['GET']) 
 api.add_resource(UserParty, '/user/<int:userID>/parties/<int:partyID>', methods=['GET']) 
 
-# /ticket/<string:uuid>                       Retorna detalhes do ticket e do usuário
+
+# Retorna detalhes do ticket e do usuário
+api.add_resource(UserTicketData, 'ticket/<string:uuid>', methods=['GET'])
+
 # /user/:userid/purchases/                    Pegar lista festas compradas por um usuário
 # /user/:userid/purchases/:party:id           Pegar lista Ingressos de uma festa de um usuário
 # /user/:userid/ticket/:ticketid              Pegas detalhes de um ingresso específico de um usuário
 # /user/:userid/party/<int:partyID>/delete/   Deletar festa
 # /user/:userid/party/<int:partyID>/update/   Deletar festa
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port='5000',debug=True)

@@ -1,4 +1,5 @@
 import os
+import qrcode
 from flask import Flask, send_from_directory
 from flask_restful import Api, Resource
 
