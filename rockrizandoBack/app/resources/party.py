@@ -14,7 +14,10 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 import os
 from werkzeug.datastructures import FileStorage
+import uuid
 import json
+import qrcode
+from PIL import Image
 
 class NewPartyData(Resource):
     def __init__(self):
@@ -271,8 +274,29 @@ class PartyBuy(Resource):
                 participants_list.append( {'message': f'Ticket with ID {ticket_id} not found'} )
 
             else:
-                participant = PurchasesModel(user_id=data['userID'], party_id=partyID, ticket_id=ticket_id, name = participant_name, email = participant_email)
+                generated_uuid = uuid.uuid4()
+                participant = PurchasesModel(user_id=data['userID'], party_id=partyID, ticket_id=ticket_id, name = participant_name, email = participant_email, uuid = generated_uuid)
+                
                 participant.save_to_db()
+
+                # data = "http://localhost:3000/ticket/" + str(generated_uuid)
+
+                # qr = qrcode.QRCode(
+                #     version=1,
+                #     error_correction=qrcode.constants.ERROR_CORRECT_L,
+                #     box_size=10,
+                #     border=4,
+                # )
+                # qr.add_data(data)
+                # qr.make(fit=True)
+
+                # img = qr.make_image(fill_color="black", back_color="white")
+
+                # image_path = "./../app/files/ticket/"
+                # # image_path = "./../app/files/ticket/ticket_" + str(generated_uuid) + ".png"
+                # img.save(image_path)
+                img = qrcode.make('http://localhost:3000/tickets/' + str(generated_uuid))
+                img.save('app/files/ticket/' + str(generated_uuid) + '.png')
 
                 participants_list.append(participant.json())
 

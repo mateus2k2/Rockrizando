@@ -69,6 +69,7 @@ function App() {
                   </RequireAuth>
                 } />
 
+                {/* Logout */}
                 <Route path={'/logout/'} element={
                   <RequireAuth loginPath={'/login'}>
                     <Logout/>
