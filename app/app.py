@@ -9,7 +9,7 @@ import os
 
 from app.resources.party import NewPartyPicture, NewPartyData, PartiesData, PartyBuy, PartyData, UserParties, UserParty
 from app.resources.user import UserRegister, UserLogin, GetUserData, UpdateUserData
-from app.resources.files import UserFile, PartyFile
+from app.resources.files import UserFile, PartyFile, TicketFile
 from app.config.config import postgresqlConfig
 
 app = Flask(__name__)
@@ -35,6 +35,7 @@ with app.app_context():
 
 api.add_resource(UserFile, '/files/user/<string:filename>', methods=['GET'])
 api.add_resource(PartyFile, '/files/party/<string:filename>', methods=['GET'])
+api.add_resource(TicketFile, '/files/ticket/<string:uuid>', methods=['GET']) # Retorna imagem do QR Code de uma festa pelo uuid
 
 api.add_resource(UserRegister, '/register', methods=['POST'])
 api.add_resource(UserLogin, '/login', methods=['POST'])
@@ -52,7 +53,6 @@ api.add_resource(PartyBuy, '/party/<int:partyID>/buy', methods=['POST']) # Fazer
 api.add_resource(UserParties, '/user/<int:userID>/parties/', methods=['GET']) 
 api.add_resource(UserParty, '/user/<int:userID>/parties/<int:partyID>', methods=['GET']) 
 
-# /files/ticket/<int:ticketID>                Retorna imagem do QR Code de uma festa pelo uuid
 # /ticket/<string:uuid>                       Retorna detalhes do ticket e do usuário
 # /user/:userid/purchases/                    Pegar lista festas compradas por um usuário
 # /user/:userid/purchases/:party:id           Pegar lista Ingressos de uma festa de um usuário

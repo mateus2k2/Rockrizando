@@ -279,22 +279,6 @@ class PartyBuy(Resource):
                 
                 participant.save_to_db()
 
-                # data = "http://localhost:3000/ticket/" + str(generated_uuid)
-
-                # qr = qrcode.QRCode(
-                #     version=1,
-                #     error_correction=qrcode.constants.ERROR_CORRECT_L,
-                #     box_size=10,
-                #     border=4,
-                # )
-                # qr.add_data(data)
-                # qr.make(fit=True)
-
-                # img = qr.make_image(fill_color="black", back_color="white")
-
-                # image_path = "./../app/files/ticket/"
-                # # image_path = "./../app/files/ticket/ticket_" + str(generated_uuid) + ".png"
-                # img.save(image_path)
                 img = qrcode.make('http://localhost:3000/tickets/' + str(generated_uuid))
                 img.save('app/files/ticket/' + str(generated_uuid) + '.png')
 

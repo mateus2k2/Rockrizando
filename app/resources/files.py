@@ -20,3 +20,11 @@ class PartyFile(Resource):
             return send_from_directory(PARTY_UPLOAD_DIRECTORY, filename)
         except FileNotFoundError:
             return {'message': 'File not found.'}, 404
+
+class TicketFile(Resource):
+    def get(self, uuid):
+        print(1)
+        try:
+            return send_from_directory('./../app/files/ticket', uuid + '.png')
+        except FileNotFoundError:
+            return {'message': 'File not found.'}, 404
