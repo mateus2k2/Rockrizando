@@ -345,8 +345,6 @@ class PartyDelete(Resource):
     
             if jwt['user'] != party.creator_id:
                 return {'message': 'Unauthorized'}, 401
-    
-            party.delete_from_db()
 
             purchases = PurchasesModel.query.filter_by(party_id=partyID).all()
             for purchase in purchases:
@@ -355,6 +353,8 @@ class PartyDelete(Resource):
             tickets = TicketModel.query.filter_by(party_id=partyID).all()
             for ticket in tickets:
                 ticket.delete_from_db()
+            
+            party.delete_from_db()
                 
             return {'message': 'Party deleted'}, 200
 
