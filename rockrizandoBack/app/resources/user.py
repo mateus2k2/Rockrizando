@@ -221,3 +221,25 @@ class UserPurchaseTicket(Resource):
                 })
         
         return allTickets, 200
+
+class UserPurchases(Resource):
+    def get(self, userID):
+        purchases = PurchasesModel.find_by_user_id(userID)
+        if not purchases:
+            return {'message': 'User not found'}, 404
+        
+        ##remove repeated parties
+        parties_ids = []
+        parties = []
+        for purchase in purchases:
+            if purchase.party_id not in parties:
+                parties_ids.append(purchase.party_id)
+
+        for party_id in parties_ids:
+            party = PartyModel.find_by_id(party_id)
+            if party:
+                parties.append(party)
+        
+        return {
+            'parties': [party.json() for party in parties]
+        }, 200
