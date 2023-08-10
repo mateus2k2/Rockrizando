@@ -218,12 +218,22 @@ class UserPurchaseTicket(Resource):
                     'ticket_description': ticket.description,
                     'ticket_price': ticket.price,
                     'party_id': ticket.party_id,
+                    'purchaseEmail': participant.email,
+                    'purchaseName': participant.name,
                 })
         
-        return allTickets, 200
+        return {'data': allTickets}, 200
 
 class UserPurchases(Resource):
+    @jwt_required()
     def get(self, userID):
+        jwt = get_jwt_identity()
+        print(jwt['user'])
+
+        if jwt['user'] != userID:
+            return {'message': 'Unauthorized'}, 401
+        
+        print(userID)
         purchases = PurchasesModel.find_by_user_id(userID)
         if not purchases:
             return {'message': 'User not found'}, 404
@@ -232,7 +242,7 @@ class UserPurchases(Resource):
         parties_ids = []
         parties = []
         for purchase in purchases:
-            if purchase.party_id not in parties:
+            if purchase.party_id not in parties_ids:
                 parties_ids.append(purchase.party_id)
 
         for party_id in parties_ids:

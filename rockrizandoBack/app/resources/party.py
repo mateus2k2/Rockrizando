@@ -247,9 +247,12 @@ class PartyBuy(Resource):
 
     @jwt_required()
     def post(self, partyID):
+        jwt = get_jwt_identity()
+        print(jwt['user'])
+        
         data = PartyBuy.parser.parse_args()
 
-        user = UserModel.find_by_id(data['userID'])
+        user = UserModel.find_by_id(jwt['user'])
         if not user:
             return {'message': 'User not found'}, 404
 
@@ -272,7 +275,7 @@ class PartyBuy(Resource):
 
             else:
                 generated_uuid = uuid.uuid4()
-                participant = PurchasesModel(user_id=data['userID'], party_id=partyID, ticket_id=ticket_id, name = participant_name, email = participant_email, uuid = generated_uuid)
+                participant = PurchasesModel(user_id=jwt['user'], party_id=partyID, ticket_id=ticket_id, name = participant_name, email = participant_email, uuid = generated_uuid)
                 
                 participant.save_to_db()
 
@@ -284,3 +287,22 @@ class PartyBuy(Resource):
         return {'message': 'Purchase successful', 'participants': participants_list}, 201
 
 
+class PartyDelete(Resource):
+        @jwt_required()
+        def delete(self, userID, partyID):
+            jwt = get_jwt_identity()
+            
+            print(jwt['user'])
+            
+            if jwt['user'] != userID:
+                return {'message': 'Unauthorized'}, 401
+            
+            party = PartyModel.find_by_id(partyID)
+            if not party:
+                return {'message': 'Party not found'}, 404
+    
+            if jwt['user'] != party.creator_id:
+                return {'message': 'Unauthorized'}, 401
+    
+            party.delete_from_db()
+            return {'message': 'Party deleted'}, 200
