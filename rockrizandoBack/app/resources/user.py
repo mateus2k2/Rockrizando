@@ -188,3 +188,36 @@ class UserTicketData(Resource):
             'PurchaseName': purchase.name,
             'PurchaseEmail': purchase.email            
         }, 200
+        
+
+class UserPurchaseTicket(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('userID', type=int, required=True, help='User ID is required')
+    parser.add_argument('partyID', type=str, required=True, help='Party name is required')
+    
+    
+    @jwt_required()
+    def get(self, useridURL, partyidURL):
+        data = UserPurchaseTicket.parser.parse_args()
+        
+        jwt = get_jwt_identity()
+
+        if jwt['user'] != data['userID']:
+            return {'message': 'Unauthorized'}, 401
+
+        participants = PurchasesModel.query.filter_by(party_id=data['partyID'], user_id=data['userID']).all() 
+        allTickets = []
+        
+        for participant in participants:
+            ticket_id = participant.ticket_id
+            ticket = TicketModel.find_by_id(ticket_id)
+            if ticket:
+                allTickets.append({
+                    'ticket_id': ticket.id,
+                    'ticket_name': ticket.name,
+                    'ticket_description': ticket.description,
+                    'ticket_price': ticket.price,
+                    'party_id': ticket.party_id,
+                })
+        
+        return allTickets, 200

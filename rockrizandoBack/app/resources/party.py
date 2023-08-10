@@ -282,3 +282,5 @@ class PartyBuy(Resource):
                 participants_list.append(participant.json())
 
         return {'message': 'Purchase successful', 'participants': participants_list}, 201
+
+
