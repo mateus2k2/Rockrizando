@@ -347,8 +347,17 @@ class PartyDelete(Resource):
                 return {'message': 'Unauthorized'}, 401
     
             party.delete_from_db()
+
+            purchases = PurchasesModel.query.filter_by(party_id=partyID).all()
+            for purchase in purchases:
+                purchase.delete_from_db()
+
+            tickets = TicketModel.query.filter_by(party_id=partyID).all()
+            for ticket in tickets:
+                ticket.delete_from_db()
+                
             return {'message': 'Party deleted'}, 200
-            
+
 class UpdatePartyPicture(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('picture', type=FileStorage, location='files', required=True, help='Party picture is required')
