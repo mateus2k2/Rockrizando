@@ -374,6 +374,7 @@ class UpdatePartyPicture(Resource):
         if file.filename == '':
             return {'message': 'No file selected'}, 400
         
+        print(1)
         file.filename = 'party_picture_' + str(partyID) + '.jpg'
         filename = secure_filename(file.filename)
         file_path = os.path.join('./app/files/party', filename)

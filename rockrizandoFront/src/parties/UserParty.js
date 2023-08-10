@@ -1,18 +1,40 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate  } from 'react-router-dom';
 import axios from 'axios';
 import { useAuthUser, useAuthHeader } from 'react-auth-kit';
+import { Button, Space } from 'antd';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 const PartyDetails = () => {
   const { userid, partyId } = useParams();
-  console.log(userid, partyId)
 
   const [partyData, setPartyData] = useState(null);
   const auth = useAuthUser();
-  const authHeader = useAuthHeader();  
+  const authHeader = useAuthHeader();
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  
+
+  const handleDelete = async () => {
+    try {
+      let response = await axios.delete(`http://localhost:5000/user/${userid}/party/${partyId}/delete`, {
+        headers: {
+          Authorization: authHeader(),
+        },
+      });
+      console.log(response)
+      navigate('/');
+    } 
+    catch (error) {
+      console.log(error);
+    }
+  };
+
+
+  const handleEdit = async () => {
+    navigate(`/user/${userid}/party/${partyId}/update`);
+  };
+
   useEffect(() => {
 
     const fetchParty = async () => {
@@ -24,20 +46,20 @@ const PartyDetails = () => {
             Authorization: authHeader(),
           }
         });
-        
+
         console.log(party.data)
         console.log(purshases.data)
 
         // const tempData = {...party, ...purshases };      
-        const tempData = Object.assign(party.data, purshases.data)     
+        const tempData = Object.assign(party.data, purshases.data)
 
         setPartyData(tempData);
         console.log(partyData)
         setLoading(false);
 
 
-      } 
-      
+      }
+
       catch (error) {
         console.log(error);
         setLoading(false);
@@ -46,7 +68,7 @@ const PartyDetails = () => {
 
     fetchParty();
 
-  // eslint-disable-next-line
+    // eslint-disable-next-line
   }, [partyId]);
 
   if (loading) {
@@ -120,13 +142,26 @@ const PartyDetails = () => {
               })}
             </div>
           ))}
-          <div>
-            <h3>Total Tickets Sold: {partyData.total_tickets_sold}</h3>
-            <h3>Total Money Made: ${partyData.total_money_made}</h3>
-          </div>
+          
+
+        <div>
+          <h3>Total Tickets Sold: {partyData.total_tickets_sold}</h3>
+          <h3>Total Money Made: ${partyData.total_money_made}</h3>
         </div>
       </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+            <Space>
+              <Button type="primary" icon={<EditOutlined />} onClick={() => {handleEdit()}}>
+                Edit Party
+              </Button>
+              <Button danger icon={<DeleteOutlined />} onClick={() => {handleDelete()}}>
+                Delete Party
+              </Button>
+            </Space>
+          </div>
+
     </div>
+    </div >
   );
 };
 

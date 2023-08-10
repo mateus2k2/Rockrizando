@@ -186,26 +186,21 @@ class UserTicketData(Resource):
                 'party_id': ticket.party_id,
             },
             'PurchaseName': purchase.name,
-            'PurchaseEmail': purchase.email            
+            'PurchaseEmail': purchase.email,            
+            'uuid': purchase.uuid            
         }, 200
         
 
 class UserPurchaseTicket(Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument('userID', type=int, required=True, help='User ID is required')
-    parser.add_argument('partyID', type=str, required=True, help='Party name is required')
-    
     
     @jwt_required()
     def get(self, useridURL, partyidURL):
-        data = UserPurchaseTicket.parser.parse_args()
-        
         jwt = get_jwt_identity()
 
-        if jwt['user'] != data['userID']:
+        if jwt['user'] != useridURL:
             return {'message': 'Unauthorized'}, 401
 
-        participants = PurchasesModel.query.filter_by(party_id=data['partyID'], user_id=data['userID']).all() 
+        participants = PurchasesModel.query.filter_by(party_id=partyidURL, user_id=useridURL).all() 
         allTickets = []
         
         for participant in participants:
@@ -213,6 +208,7 @@ class UserPurchaseTicket(Resource):
             ticket = TicketModel.find_by_id(ticket_id)
             if ticket:
                 allTickets.append({
+                    'purchase': participant.id,
                     'ticket_id': ticket.id,
                     'ticket_name': ticket.name,
                     'ticket_description': ticket.description,
@@ -228,14 +224,13 @@ class UserPurchases(Resource):
     @jwt_required()
     def get(self, userID):
         jwt = get_jwt_identity()
-        print(jwt['user'])
 
         if jwt['user'] != userID:
             return {'message': 'Unauthorized'}, 401
         
-        print(userID)
         purchases = PurchasesModel.find_by_user_id(userID)
         if not purchases:
+            # print("not purchases")
             return {'message': 'User not found'}, 404
         
         ##remove repeated parties
@@ -270,4 +265,5 @@ class UserSpecifiedTicket(Resource):
         if not ticket:
             return {'message': 'Ticket not found'}, 404
         
-        return ticket.json(), 200
+        return {'ticket': ticket.json(),
+                'purchase': purchase.json()}, 200

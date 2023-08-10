@@ -10,6 +10,7 @@ const UserProfile = () => {
   const [fileList, setFileList] = useState([]);
   const [isEditMode, setIsEditMode] = useState(false);
   const [name, setName] = useState('ErroName');
+  const [nameStatic, setNameStatic] = useState('ErroName');
   const [email, setEmail] = useState('ErrorEmail');
   const [password, setPassword] = useState('');
   const auth = useAuthUser();
@@ -54,6 +55,7 @@ const UserProfile = () => {
       // console.log(response.data)
       const userData = response.data;
       setName(userData.username);
+      setNameStatic(userData.username);
       setEmail(userData.email);
     } catch (error) {
       console.log(error);
@@ -123,7 +125,7 @@ const UserProfile = () => {
           {/* Render the profile picture here */}
           <img src={`http://localhost:5000/files/user/profile_picture_${auth().user}.jpg`} alt="Profile" />
         </div>
-        <h1>{name}</h1>
+        <h1>{nameStatic}</h1>
       </div>
       {isEditMode ? (
         <Form>

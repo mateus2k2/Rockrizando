@@ -12,7 +12,6 @@ import { Layout, theme } from 'antd';
 import Login from './users/Login'
 import Register from './users/Register'
 import UserProfile from './users/UserProfile'
-import Logout from './users/Logout';
 
 import Parties from './parties/Parties'
 import NewParty from './parties/NewParty'
@@ -48,7 +47,8 @@ function App() {
       <Router>
         <Layout style={{ minHeight: '100vh' }}>
 
-          <Sidebar />
+          <Sidebar /> {/* Fazer logout */}
+          
 
           <Layout style={{ minHeight: '100vh' }}>
 
@@ -69,14 +69,7 @@ function App() {
                   </RequireAuth>
                 } />
 
-                {/* Logout */}
-                <Route path={'/logout/'} element={
-                  <RequireAuth loginPath={'/login'}>
-                    <Logout/>
-                  </RequireAuth>
-                } />  
-
-                {/* mostrar listas com as festas compradas pelo usuario. Linkar cada festa para a lista de tickets de cada usuario */}
+                {/* mostrar listas com as festas compradas pelo usuario. Linkar cada festa para a lista de tickets de cada usuario daquela festa */}
                 <Route path={'/user/:userid/purchases/'} element={
                   <RequireAuth loginPath={'/login'}>
                     < PartyPurchases/>
@@ -84,7 +77,7 @@ function App() {
                 } /> 
 
                 {/* mostrar listas com os tickets de uma certa festa de um certo usuário */}
-                <Route path={'/user/:userid/purchases/:party'} element={
+                <Route path={'/user/:userid/purchases/:partyid'} element={
                   <RequireAuth loginPath={'/login'}>
                     < UserTickts/>
                   </RequireAuth>
@@ -98,7 +91,7 @@ function App() {
                 } />           
 
                 {/* mostra detalhe de um certo ingresso */}
-                <Route path={'/ticket/:ticketUUID'} element={
+                <Route path={'/tickets/:ticketUUID'} element={
                   <RequireAuth loginPath={'/login'}>
                     < TicketDetail/>
                   </RequireAuth>
@@ -110,9 +103,17 @@ function App() {
                   </RequireAuth>
                 } />
 
+                {/* Botao de deletar festa e editar festa */}
                 <Route path={'/user/:userid/parties/:partyId'} element={
                   <RequireAuth loginPath={'/login'}>
                     < UserParty/>
+                  </RequireAuth>
+                } />
+
+                {/* Editar Festa */}
+                <Route path={'/user/:userid/party/:partyId/update'} element={
+                  <RequireAuth loginPath={'/login'}>
+                      < PartyUpdate/>
                   </RequireAuth>
                 } />
 
@@ -120,13 +121,6 @@ function App() {
                 <Route path={'/party/new'} element={
                   <RequireAuth loginPath={'/login'}>
                     <NewParty />
-                  </RequireAuth>
-                } />
-
-
-                <Route path={"/party/:partyId/update/"} element={
-                  <RequireAuth loginPath={'/login'}>
-                    < PartyUpdate/>
                   </RequireAuth>
                 } />
 

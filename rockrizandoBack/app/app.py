@@ -57,22 +57,22 @@ api.add_resource(UserParty, '/user/<int:userID>/parties/<int:partyID>', methods=
 # Retorna detalhes do ticket e do usuário
 api.add_resource(UserTicketData, '/ticket/<string:uuid>', methods=['GET'])
 
-# /user/:userid/purchases/                    Pegar lista festas compradas por um usuário
+# Pegar lista festas compradas por um usuário
 api.add_resource(UserPurchases, '/user/<int:userID>/purchases', methods=['GET'])
 
-# /user/:userid/purchases/:party:id           Pegar lista Ingressos de uma festa de um usuário
+# Pegar lista Ingressos de uma festa de um usuário
 api.add_resource(UserPurchaseTicket, '/user/<int:useridURL>/purchases/<int:partyidURL>', methods=['GET']) 
 
-# /user/:userid/ticket/:ticketid              Pegar detalhes de um ingresso específico de um usuário
+# Pegar detalhes de um ingresso específico de um usuário
 api.add_resource(UserSpecifiedTicket, '/user/<int:userID>/ticket/<int:purchaseID>', methods=['GET'])
 
-# /user/:userid/party/<int:partyID>/delete/   Deletar festa
+# Deletar festa
 api.add_resource(PartyDelete, '/user/<int:userID>/party/<int:partyID>/delete', methods=['DELETE'])
 
-# /user/:userid/party/<int:partyID>/update/   Update festa
+# Update festa
 api.add_resource(UpdateParty, '/user/<int:userID>/party/<int:partyID>/update/', methods=['PATCH'])
 
-# /user/:userid/party/<int:partyID>/update/picture   Update festa
+# Update festa
 api.add_resource(UpdatePartyPicture, '/user/<int:userID>/party/<int:partyID>/update/picture', methods=['PATCH'])
 
 if __name__ == '__main__':

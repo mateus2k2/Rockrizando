@@ -14,7 +14,7 @@ const UserTickets = () => {
   const auth = useAuthUser();
   const authHeader = useAuthHeader();
 
-  const { userid } = useParams();
+  const { userid, partyid } = useParams();
 
   useEffect(() => {
     fetchData();
@@ -24,12 +24,14 @@ const UserTickets = () => {
   const fetchData = async () => {
     try {
       // const response = await axios.get('http://localhost:5000/parties');
-      const response = await axios.get(`http://localhost:5000/user/${auth().user}/parties/`,{
+      const response = await axios.get(`http://localhost:5000/user/${auth().user}/purchases/${partyid}`,{
                 headers: {
                     Authorization: authHeader(),
                 },
             });
-      setData(response.data);
+      console.log(response.data)
+
+      setData(response.data.data);
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -41,12 +43,12 @@ const UserTickets = () => {
   };
 
   const filteredData = data.filter(item =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    item.ticket_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <React.Fragment>
-      <h1 className="centerText">Parties</h1>
+      <h1 className="centerText">{`Ingresso comprados para a festa ${partyid}`}</h1>
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <div>
           <Search
@@ -61,9 +63,11 @@ const UserTickets = () => {
           ) : (
             <div>
               {filteredData.map(item => (
-                <Link key={item.id} to={`/user/${userid}/parties/${item.id}`}>
-                  <Card title={item.name} style={{ width: 300 }}>
-                    <p>{item.description}</p>
+                <Link key={item.purchase} to={`/user/${userid}/ticket/${item.purchase}`}>
+                  <Card title={item.ticket_name} style={{ width: 300 }}>
+                    <p>{item.ticket_description}</p>
+                    <p>{item.purchaseEmail}</p>
+                    <p>{item.purchaseName}</p>
                   </Card>
                 </Link>
               ))}

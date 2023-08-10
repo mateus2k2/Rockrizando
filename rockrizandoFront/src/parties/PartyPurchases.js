@@ -24,12 +24,14 @@ const PartyPurchases = () => {
   const fetchData = async () => {
     try {
       // const response = await axios.get('http://localhost:5000/parties');
-      const response = await axios.get(`http://localhost:5000/user/${auth().user}/parties/`,{
+      const response = await axios.get(`http://localhost:5000/user/${auth().user}/purchases`,{
                 headers: {
                     Authorization: authHeader(),
                 },
             });
-      setData(response.data);
+      setData(response.data['parties']);
+      console.log(response.data)
+
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -46,7 +48,7 @@ const PartyPurchases = () => {
 
   return (
     <React.Fragment>
-      <h1 className="centerText">Parties</h1>
+      <h1 className="centerText">Suas Festas Compradas</h1>
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <div>
           <Search
@@ -61,7 +63,7 @@ const PartyPurchases = () => {
           ) : (
             <div>
               {filteredData.map(item => (
-                <Link key={item.id} to={`/user/${userid}/parties/${item.id}`}>
+                <Link key={item.id} to={`/user/${userid}/purchases/${item.id}`}>
                   <Card title={item.name} style={{ width: 300 }}>
                     <p>{item.description}</p>
                   </Card>

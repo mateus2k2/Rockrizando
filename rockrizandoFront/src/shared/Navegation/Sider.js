@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Layout } from 'antd';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   HomeOutlined,
   PlusOutlined,
   UserOutlined,
-  KeyOutlined
+  KeyOutlined,
+  LogoutOutlined
 } from '@ant-design/icons';
-import { Grid } from 'antd';
+import { Grid, Button } from 'antd';
 import { useAuthUser, useIsAuthenticated } from 'react-auth-kit';
+import { useSignOut  } from 'react-auth-kit';
 
 import Logo from '../Logo'
 import './Sider.css';
@@ -16,15 +18,24 @@ import './Sider.css';
 const { Sider } = Layout;
 const { useBreakpoint } = Grid;
 
+
+
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState([]);
   const location = useLocation();
   const screens = useBreakpoint();
+  const signout = useSignOut();
+  const navigate = useNavigate();
 
   const auth = useAuthUser()
   const isAuthenticated = useIsAuthenticated();
 
+  const handleSignOut = () => {
+    console.log("teste")
+    signout();
+    navigate('/');
+  };
 
   useEffect(() => {
     const path = location.pathname;
@@ -66,7 +77,11 @@ const Sidebar = () => {
         <Menu.Item key="myParties">
           <Link to={`/user/${userId}/parties/`}>My Parties</Link>
         </Menu.Item>
-      </Menu.SubMenu>
+      </Menu.SubMenu>,
+
+      <Menu.Item key="signout" icon={<LogoutOutlined />}>
+        <Button type="link" onClick={handleSignOut}>Sign Out</Button>
+      </Menu.Item>
     ];
   }
   else {
