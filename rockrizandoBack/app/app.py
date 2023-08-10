@@ -9,7 +9,7 @@ import os
 
 from app.resources.party import NewPartyPicture, NewPartyData, PartiesData, PartyBuy, PartyData, UserParties, UserParty, PartyDelete
 from app.resources.user import UserRegister, UserLogin, GetUserData, UpdateUserData, UserTicketData, UserPurchaseTicket, UserPurchases, UserSpecifiedTicket
-from app.resources.files import UserFile, PartyFile, TicketFile
+from app.resources.files import UserFile, PartyFile, TicketFile, UpdateParty, UpdatePartyPicture
 from app.config.config import postgresqlConfig
 
 app = Flask(__name__)
@@ -70,6 +70,10 @@ api.add_resource(UserSpecifiedTicket, '/user/<int:userID>/ticket/<int:purchaseID
 api.add_resource(PartyDelete, '/user/<int:userID>/party/<int:partyID>/delete', methods=['DELETE'])
 
 # /user/:userid/party/<int:partyID>/update/   Update festa
+api.add_resource(UpdateParty, '/user/<int:userID>/party/<int:partyID>/update/', methods=['PATCH'])
+
+# /user/:userid/party/<int:partyID>/update/picture   Update festa
+api.add_resource(UpdatePartyPicture, '/user/<int:userID>/party/<int:partyID>/update/picture', methods=['PATCH'])
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port='5000',debug=True)

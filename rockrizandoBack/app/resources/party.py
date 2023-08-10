@@ -7,6 +7,7 @@ from app.models.party import PartyModel
 from app.models.user import UserModel
 from app.models.ticket import TicketModel
 from app.models.purchases import PurchasesModel
+from werkzeug.datastructures import FileStorage
 # from app.util.logz import create_logger
 from sqlalchemy import func
 from app.config.db import db
@@ -286,6 +287,47 @@ class PartyBuy(Resource):
 
         return {'message': 'Purchase successful', 'participants': participants_list}, 201
 
+class UpdateParty(Resource):
+        parser = reqparse.RequestParser()
+        parser.add_argument('name', type=str, required=True, help='Party name is required')
+        parser.add_argument('description', type=str, required=True, help='Party description is required')
+        parser.add_argument('party_date', type=str, required=True, help='Party date is required')
+        parser.add_argument('location', type=str, required=True, help='Party location is required')
+        #parser.add_argument('tickets', type=dict, required=True, help='Tickets data is required', action="append")
+    
+        @jwt_required()
+        def put(self, partyID):
+            data = UpdateParty.parser.parse_args()
+    
+            party = PartyModel.find_by_id(partyID)
+            if not party:
+                return {'message': 'Party not found'}, 404
+    
+            party.name = data['name']
+            party.description = data['description']
+            party.party_date = data['party_date']
+            party.location = data['location']
+    
+            party.save_to_db()
+    
+            # tickets_data = data['tickets']
+            # for ticket_data in tickets_data:
+            #     ticket_id = ticket_data.get('id')
+            #     ticket_name = ticket_data.get('name')
+            #     ticket_price = ticket_data.get('price')
+            #     ticket_description = ticket_data.get('description')
+    
+            #     ticket = TicketModel.find_by_id(ticket_id)
+            #     if not ticket:
+            #         return {'message': 'Ticket not found'}, 404
+    
+            #     ticket.name = ticket_name
+            #     ticket.price = ticket_price
+            #     ticket.description = ticket_description
+    
+            #     ticket.save_to_db()
+    
+            return {'message': 'Party updated successfully'}, 200
 
 class PartyDelete(Resource):
         @jwt_required()
@@ -306,3 +348,31 @@ class PartyDelete(Resource):
     
             party.delete_from_db()
             return {'message': 'Party deleted'}, 200
+            
+class UpdatePartyPicture(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('picture', type=FileStorage, location='files', required=True, help='Party picture is required')
+
+    @jwt_required()
+    def put(self, partyID):
+        data = UpdatePartyPicture.parser.parse_args()
+
+        party = PartyModel.find_by_id(partyID)
+        if not party:
+            return {'message': 'Party not found'}, 404
+
+        file = data['picture']
+        if file.filename == '':
+            return {'message': 'No file selected'}, 400
+        
+        file.filename = 'party_picture_' + str(partyID) + '.jpg'
+        filename = secure_filename(file.filename)
+        file_path = os.path.join('./app/files/user', filename)
+        file.save(file_path)
+        party_picture = file_path
+
+        party.set_party_picture(party_picture)
+
+        party.save_to_db()
+
+        return {'message': 'Party picture updated successfully'}, 200
