@@ -195,5 +195,18 @@ class UserPurchases(Resource):
         if not purchases:
             return {'message': 'User not found'}, 404
         
-        purchases = list(map(lambda x: x.json(), purchases))
-        return {'purchases': purchases}, 200
+        ##remove repeated parties
+        parties_ids = []
+        parties = []
+        for purchase in purchases:
+            if purchase.party_id not in parties:
+                parties_ids.append(purchase.party_id)
+
+        for party_id in parties_ids:
+            party = PartyModel.find_by_id(party_id)
+            if party:
+                parties.append(party)
+        
+        return {
+            'parties': [party.json() for party in parties]
+        }, 200
