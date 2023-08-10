@@ -7,9 +7,9 @@ import json
 
 import os
 
-from app.resources.party import NewPartyPicture, NewPartyData, PartiesData, PartyBuy, PartyData, UserParties, UserParty, PartyDelete
+from app.resources.party import NewPartyPicture, NewPartyData, PartiesData, PartyBuy, PartyData, UserParties, UserParty, PartyDelete, UpdateParty, UpdatePartyPicture
 from app.resources.user import UserRegister, UserLogin, GetUserData, UpdateUserData, UserTicketData, UserPurchaseTicket, UserPurchases, UserSpecifiedTicket
-from app.resources.files import UserFile, PartyFile, TicketFile, UpdateParty, UpdatePartyPicture
+from app.resources.files import UserFile, PartyFile, TicketFile
 from app.config.config import postgresqlConfig
 
 app = Flask(__name__)

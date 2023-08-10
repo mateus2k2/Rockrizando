@@ -296,7 +296,7 @@ class UpdateParty(Resource):
         #parser.add_argument('tickets', type=dict, required=True, help='Tickets data is required', action="append")
     
         @jwt_required()
-        def put(self, partyID):
+        def patch(self, userID, partyID):
             data = UpdateParty.parser.parse_args()
     
             party = PartyModel.find_by_id(partyID)
@@ -354,7 +354,7 @@ class UpdatePartyPicture(Resource):
     parser.add_argument('picture', type=FileStorage, location='files', required=True, help='Party picture is required')
 
     @jwt_required()
-    def put(self, partyID):
+    def patch(self, userID, partyID):
         data = UpdatePartyPicture.parser.parse_args()
 
         party = PartyModel.find_by_id(partyID)
@@ -367,7 +367,7 @@ class UpdatePartyPicture(Resource):
         
         file.filename = 'party_picture_' + str(partyID) + '.jpg'
         filename = secure_filename(file.filename)
-        file_path = os.path.join('./app/files/user', filename)
+        file_path = os.path.join('./app/files/party', filename)
         file.save(file_path)
         party_picture = file_path
 
