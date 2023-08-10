@@ -253,3 +253,21 @@ class UserPurchases(Resource):
         return {
             'parties': [party.json() for party in parties]
         }, 200
+
+class UserSpecifiedTicket(Resource):
+    @jwt_required()
+    def get(self, userID, purchaseID):
+        jwt = get_jwt_identity()
+
+        if jwt['user'] != userID:
+            return {'message': 'Unauthorized'}, 401
+        
+        purchase = PurchasesModel.find_by_id(purchaseID)
+        if not purchase:
+            return {'message': 'Ticket not found'}, 404
+
+        ticket = TicketModel.find_by_id(purchase.ticket_id)
+        if not ticket:
+            return {'message': 'Ticket not found'}, 404
+        
+        return ticket.json(), 200
