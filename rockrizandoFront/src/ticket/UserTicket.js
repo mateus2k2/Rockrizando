@@ -12,7 +12,34 @@ const UserTicket = () => {
   const authHeader = useAuthHeader();  
   const [loading, setLoading] = useState(true);
 
-  
+  const [cancellationMessage, setCancellationMessage] = useState('');
+
+  const handleCancel = async () => {
+    
+    const partyDate = new Date(partyData.ticket.date); 
+    const currentDate = new Date();
+
+    if (partyDate <= currentDate) {
+      setCancellationMessage("Não é possível cancelar essa festa");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/cancel-ticket/${ticketid}`,
+        {},
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
+        }
+      );
+
+      setCancellationMessage(response.data.message);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
 
     const fetchParty = async () => {
@@ -86,7 +113,19 @@ const UserTicket = () => {
           <p>{partyData.ticket.name}</p>
           <p>{partyData.ticket.description}</p>
         </div>
+        <div style={{ width: '800px', backgroundColor: 'white', padding: '20px', borderRadius: '8px' }}>
+        
+          {/* ... (existing code) */}
+          
+          {cancellationMessage ? (
+            <p>{cancellationMessage}</p>
+          ) : partyData.ticket.date <= new Date() ? (
+            <p>Não é possível cancelar essa festa</p>
+          ) : (
+            <button onClick={handleCancel}>Cancel Purchase</button>
+          )}
 
+      </div>
       </div>
     </div>
   );
