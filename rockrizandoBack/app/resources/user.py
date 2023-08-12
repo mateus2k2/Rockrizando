@@ -282,6 +282,11 @@ class PurchaseDelete(Resource):
             return {'message': 'Ticket not found'}, 404
 
         deleted = purchase.json()
+        
+        filename = str(purchase.uuid) + '.png'
+        file_path = os.path.join('./app/files/ticket', filename)
+        os.remove(file_path)
+        
         purchase.delete_from_db()
         
         return {'message': 'Ticket deleted',

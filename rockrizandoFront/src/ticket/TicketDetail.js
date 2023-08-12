@@ -47,9 +47,9 @@ const TicketDetail = () => {
     >
       <div style={{ width: '800px', backgroundColor: 'white', padding: '20px', borderRadius: '8px' }}>
         <div style={{ position: 'relative' }}>
-          <p>{partyData.PurchaseEmail}</p>
-          <p>{partyData.PurchaseName}</p>
-          <p>{partyData.birth_date}</p>
+          <p>Email da compra = {partyData.PurchaseEmail}</p>
+          <p>Nome da compra = {partyData.PurchaseName}</p>
+          <p>ID da festa = {partyData.id}</p>
         </div>
       </div>
     </div>

@@ -348,12 +348,18 @@ class PartyDelete(Resource):
 
             purchases = PurchasesModel.query.filter_by(party_id=partyID).all()
             for purchase in purchases:
+                filename = str(purchase.uuid) + '.png'
+                file_path = os.path.join('./app/files/ticket', filename)
+                os.remove(file_path)
                 purchase.delete_from_db()
 
             tickets = TicketModel.query.filter_by(party_id=partyID).all()
             for ticket in tickets:
                 ticket.delete_from_db()
             
+            filename = 'party_picture_' + str(party.id) + '.jpg'
+            file_path = os.path.join('./app/files/party', filename)
+            os.remove(file_path)
             party.delete_from_db()
                 
             return {'message': 'Party deleted'}, 200
