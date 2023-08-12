@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Spin, Input } from 'antd';
+import { Card, Spin, Input, message } from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import { useAuthHeader, useAuthUser } from 'react-auth-kit';
 import antIcon from '../shared/Spin.js';
@@ -35,6 +35,8 @@ const PartyPurchases = () => {
       setLoading(false);
     } catch (error) {
       console.log(error);
+      message.error('Error or no purchases found');
+      setLoading(false);
     }
   };
 

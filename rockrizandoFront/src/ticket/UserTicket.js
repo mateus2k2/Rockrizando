@@ -1,16 +1,42 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Button, Space } from 'antd';
 import axios from 'axios';
 import { useAuthUser, useAuthHeader } from 'react-auth-kit';
+import { DeleteOutlined } from '@ant-design/icons';
 
 const UserTicket = () => {
   const { ticketid } = useParams();
   // console.log(ticketid)
 
+  const navigate = useNavigate();
   const [partyData, setPartyData] = useState(null);
   const auth = useAuthUser();
   const authHeader = useAuthHeader();  
   const [loading, setLoading] = useState(true);
+
+  const handleDelete = async () => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/user/${auth().user}/purchases/${partyData.purchase.id}/delete`,
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
+        }
+      );
+  
+      if (response.status === 200) {
+        // Purchase deleted successfully, you might want to navigate the user somewhere or show a confirmation message
+        console.log('Purchase deleted successfully');
+        navigate('/')
+      }
+    } catch (error) {
+      console.error('Error deleting purchase:', error);
+    }
+
+    console.log(partyData)
+  };
 
   
   useEffect(() => {
@@ -87,7 +113,15 @@ const UserTicket = () => {
           <p>{partyData.ticket.description}</p>
         </div>
 
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+            <Space>
+              <Button danger icon={<DeleteOutlined />} onClick={() => {handleDelete()}}>
+                Purchases Party
+              </Button>
+            </Space>
+          </div>
       </div>
+
     </div>
   );
 };

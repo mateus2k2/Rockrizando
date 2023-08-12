@@ -63,8 +63,11 @@ const TicketSelection = () => {
       try {
         const response = await axios.get(`http://localhost:5000/party/${partyId}`);
         setTicketOptions(response.data.tickets);
-      } catch (error) {
+      } 
+      catch (error) {
         console.log(error);
+        // message.error('Error or no purchases found');
+        // setLoading(false);
       }
     };
 

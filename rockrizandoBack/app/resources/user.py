@@ -267,3 +267,22 @@ class UserSpecifiedTicket(Resource):
         
         return {'ticket': ticket.json(),
                 'purchase': purchase.json()}, 200
+        
+
+class PurchaseDelete(Resource):
+    @jwt_required()
+    def delete(self, userID, purchaseID):
+        jwt = get_jwt_identity()
+
+        if jwt['user'] != userID:
+            return {'message': 'Unauthorized'}, 401
+        
+        purchase = PurchasesModel.find_by_id(purchaseID)
+        if not purchase:
+            return {'message': 'Ticket not found'}, 404
+
+        deleted = purchase.json()
+        purchase.delete_from_db()
+        
+        return {'message': 'Ticket deleted',
+                'deleted': deleted}, 200

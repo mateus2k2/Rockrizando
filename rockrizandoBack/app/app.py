@@ -8,7 +8,7 @@ import json
 import os
 
 from app.resources.party import NewPartyPicture, NewPartyData, PartiesData, PartyBuy, PartyData, UserParties, UserParty, PartyDelete, UpdateParty, UpdatePartyPicture
-from app.resources.user import UserRegister, UserLogin, GetUserData, UpdateUserData, UserTicketData, UserPurchaseTicket, UserPurchases, UserSpecifiedTicket
+from app.resources.user import UserRegister, UserLogin, GetUserData, UpdateUserData, UserTicketData, UserPurchaseTicket, UserPurchases, UserSpecifiedTicket, PurchaseDelete
 from app.resources.files import UserFile, PartyFile, TicketFile
 from app.config.config import postgresqlConfig
 
@@ -68,6 +68,9 @@ api.add_resource(UserSpecifiedTicket, '/user/<int:userID>/ticket/<int:purchaseID
 
 # Deletar festa
 api.add_resource(PartyDelete, '/user/<int:userID>/party/<int:partyID>/delete', methods=['DELETE'])
+
+#Purchase Delete
+api.add_resource(PurchaseDelete, '/user/<int:userID>/purchases/<int:purchaseID>/delete', methods=['DELETE'])
 
 # Update festa
 api.add_resource(UpdateParty, '/user/<int:userID>/party/<int:partyID>/update/', methods=['PATCH'])
