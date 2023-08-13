@@ -187,6 +187,7 @@ class UserTicketData(Resource):
             },
             'PurchaseName': purchase.name,
             'PurchaseEmail': purchase.email,            
+            'PurchaseCPF': purchase.cpf,            
             'uuid': purchase.uuid            
         }, 200
         
@@ -216,6 +217,7 @@ class UserPurchaseTicket(Resource):
                     'party_id': ticket.party_id,
                     'purchaseEmail': participant.email,
                     'purchaseName': participant.name,
+                    'purchaseCPF': participant.cpf,
                 })
         
         return {'data': allTickets}, 200

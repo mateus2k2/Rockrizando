@@ -9,19 +9,21 @@ class PurchasesModel(db.Model):
     ticket_id = db.Column(db.Integer, db.ForeignKey('ticket.id'))
     email = db.Column(db.String(100))
     name = db.Column(db.String(100))
+    cpf = db.Column(db.String(11))
     uuid = db.Column(db.String(36))
 
     user = db.relationship('UserModel')
     party = db.relationship('PartyModel')
     ticket = db.relationship('TicketModel')
 
-    def __init__(self, user_id, party_id, ticket_id, name, email, uuid):
+    def __init__(self, user_id, party_id, ticket_id, name, email, uuid, cpf):
         self.user_id = user_id
         self.party_id = party_id
         self.ticket_id = ticket_id
         self.name = name
         self.email = email
         self.uuid = uuid
+        self.cpf = cpf
 
     def json(self):
         return {
@@ -31,7 +33,8 @@ class PurchasesModel(db.Model):
             'ticket_id': self.ticket_id,
             'name': self.name,
             'email': self.email,
-            'uuid': self.uuid
+            'uuid': self.uuid,
+            'cpf': self.cpf
         }
 
     def save_to_db(self):

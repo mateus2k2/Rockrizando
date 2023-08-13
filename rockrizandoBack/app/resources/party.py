@@ -269,6 +269,7 @@ class PartyBuy(Resource):
             ticket_id = participant_data.get('ticketID')
             participant_name = participant_data.get('name')
             participant_email = participant_data.get('email')
+            participant_cpf = participant_data.get('cpf')
 
             ticket = TicketModel.find_by_id(ticket_id)
             if not ticket:
@@ -276,7 +277,7 @@ class PartyBuy(Resource):
 
             else:
                 generated_uuid = uuid.uuid4()
-                participant = PurchasesModel(user_id=jwt['user'], party_id=partyID, ticket_id=ticket_id, name = participant_name, email = participant_email, uuid = generated_uuid)
+                participant = PurchasesModel(user_id=jwt['user'], party_id=partyID, ticket_id=ticket_id, name = participant_name, email = participant_email, uuid = generated_uuid, cpf = participant_cpf)
                 
                 participant.save_to_db()
 

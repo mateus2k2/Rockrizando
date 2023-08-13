@@ -26,6 +26,13 @@ const TicketForm = ({ ticketForm, index, onTicketFormChange, onRemoveTicketForm,
           />
         </Form.Item>
 
+        <Form.Item label="CPF">
+          <Input
+            value={ticketForm.cpf}
+            onChange={(e) => onTicketFormChange(index, 'cpf', e.target.value)}
+          />
+        </Form.Item>
+
         <Form.Item label="Ticket Type">
           <Select
             value={ticketForm.ticketType}
@@ -55,7 +62,7 @@ const TicketSelection = () => {
   const authHeader = useAuthHeader();
   const auth = useAuthUser();
 
-  const [ticketForms, setTicketForms] = useState([{ name: '', email: '', ticketType: '' }]);
+  const [ticketForms, setTicketForms] = useState([{ name: '', email: '', ticketType: '', cpf: ''}]);
   const [ticketOptions, setTicketOptions] = useState([]);
 
   useEffect(() => {
@@ -81,7 +88,7 @@ const TicketSelection = () => {
   };
 
   const addTicketForm = () => {
-    setTicketForms([...ticketForms, { name: '', email: '', ticketType: '' }]);
+    setTicketForms([...ticketForms, { name: '', email: '', ticketType: '', cpf: ''}]);
   };
 
   const removeTicketForm = (index) => {
@@ -102,11 +109,12 @@ const TicketSelection = () => {
           ticketID: ticketOption ? ticketOption.id : null,
           name: ticketForm.name,
           email: ticketForm.email,
+          cpf: ticketForm.cpf,
         };
       }),
     };
 
-    // console.log(purchases)
+    console.log(purchases)
 
     try {
       await axios.post(`http://localhost:5000/party/${partyId}/buy`, purchases, {

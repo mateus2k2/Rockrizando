@@ -112,6 +112,7 @@ const UserTicket = () => {
         <div style={{ position: 'relative' }}>
           <p>Nome Na Compra = {partyData.purchase.name}</p>
           <p>Email da Compra = {partyData.purchase.email}</p>
+          <p>CPF da Compra = {partyData.purchase.cpf}</p>
           <p>Nome do Tipo de Ingresso = {partyData.ticket.name}</p>
           <p>Descrição do Tipo de Ingresso = {partyData.ticket.description}</p>
         </div>
