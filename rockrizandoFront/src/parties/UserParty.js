@@ -137,8 +137,17 @@ const PartyDetails = () => {
                       Tickets Sold: {typeCount.tickets_sold} (Total Money Made: ${typeCount.money_made})
                     </p>
                   );
+                  
                 }
-                return null;
+                else{
+                  return (
+                    <p key={typeCount.ticket_id}>
+                      Tickets Sold: 0 (Total Money Made: $0.00)
+                    </p>
+                  );
+                  
+                }
+                // return null;
               })}
             </div>
           ))}

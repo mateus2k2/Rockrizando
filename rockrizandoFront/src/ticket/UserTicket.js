@@ -99,7 +99,7 @@ const UserTicket = () => {
     >
       <div style={{ width: '800px', backgroundColor: 'white', padding: '20px', borderRadius: '8px' }}>
         
-        <div style={{ position: 'relative' }}>
+        <div style={{ width: '60%', height: 'auto', borderRadius: '8px' }}>
           { }
           <img
             src={`http://localhost:5000/files/ticket/${partyData.purchase.uuid}` || 'https://via.placeholder.com/400x200'} // URL da imagem da festa ou uma imagem de espaço reservado
