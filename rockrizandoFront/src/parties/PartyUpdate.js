@@ -113,13 +113,13 @@ const PartyUpdate = () => {
 
             // console.log(responseData.data)
             // console.log(responsePicture)
-            message.success('Party Added! Redirecting...');
+            message.success('Party Updated! Redirecting...');
             navigate('/');
         }
         catch (error) {
             setLoading(false)
             console.error('Add Party failed:', error);
-            message.error('Failed to add party.');
+            message.error('Failed to Update party.');
             return false;
         }
 
@@ -264,7 +264,7 @@ const PartyUpdate = () => {
                             return (
                                 <React.Fragment>
                                     <Button type="primary" htmlType="submit" disabled={!formIsComplete}>
-                                        Create
+                                        Update
                                     </Button>
 
                                     {loading && (

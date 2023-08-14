@@ -50,6 +50,7 @@ const TicketDetail = () => {
           <p>Email da compra = {partyData.PurchaseEmail}</p>
           <p>Nome da compra = {partyData.PurchaseName}</p>
           <p>CPF da compra = {partyData.PurchaseCPF}</p>
+          <p>Tipo Ingresso = {partyData.ticket.name}</p>
           <p>ID da festa = {partyData.id}</p>
         </div>
       </div>
