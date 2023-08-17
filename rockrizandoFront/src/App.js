@@ -62,6 +62,9 @@ function App() {
                 <Route exact path="/login" element={<Login />} />
                 <Route exact path="/register" element={<Register />} />
                 <Route exact path="/party/:partyId/" element={<PartyDetails />} />
+                
+                {/* mostra detalhe de um certo ingresso */}
+                <Route exact path="/tickets/:ticketUUID" element={<TicketDetail />} />
 
                 <Route path={'/user/:userid/profile/'} element={
                   <RequireAuth loginPath={'/login'}>
@@ -89,13 +92,6 @@ function App() {
                     < UserTickt/>
                   </RequireAuth>
                 } />           
-
-                {/* mostra detalhe de um certo ingresso */}
-                <Route path={'/tickets/:ticketUUID'} element={
-                  <RequireAuth loginPath={'/login'}>
-                    < TicketDetail/>
-                  </RequireAuth>
-                } />
 
                 <Route path={'/user/:userid/parties/'} element={
                   <RequireAuth loginPath={'/login'}>
